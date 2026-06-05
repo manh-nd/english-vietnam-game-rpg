@@ -6,8 +6,9 @@ import { NpcInteractionController } from '../systems/NpcInteractionController';
 import type { NpcInteractionResult, NpcInteractionStatus } from '../systems/NpcInteractionController';
 import type { LessonAnswerResult, LessonManager } from '../systems/LessonManager';
 import type { QuestManager, QuestUpdate } from '../systems/QuestManager';
-import type { NpcContent } from '../types/content';
+import type { NpcContent, QuestRewardsContent } from '../types/content';
 import { DialogueBox } from '../ui/DialogueBox';
+import { RewardToast } from '../ui/RewardToast';
 
 export class HaGiangScene extends Phaser.Scene {
   public static readonly key = 'HaGiangScene';
@@ -29,8 +30,13 @@ export class HaGiangScene extends Phaser.Scene {
   private npcInteractionController?: NpcInteractionController;
   private interactionPromptText?: Phaser.GameObjects.Text;
   private questStatusText?: Phaser.GameObjects.Text;
+  private collectionSummaryText?: Phaser.GameObjects.Text;
+  private rewardToast?: RewardToast;
   private questManager?: QuestManager;
   private latestQuestUpdateMessage = 'Quest progress will appear here.';
+  private totalXP = 0;
+  private readonly collectedVocab = new Set<string>();
+  private readonly collectedPassportStamps = new Set<string>();
   private npcSprites: NpcSprite[] = [];
   private nearestNpc?: NpcSprite;
   private interactionInputPausedUntil = 0;
@@ -65,6 +71,8 @@ export class HaGiangScene extends Phaser.Scene {
     this.createAuthoredNpcs();
     this.createInteractionPrompt();
     this.createQuestStatusHud();
+    this.createCollectionSummaryHud();
+    this.createRewardToast();
     this.createDialogueBox();
 
     this.cursors = this.input.keyboard?.createCursorKeys();
@@ -246,7 +254,11 @@ export class HaGiangScene extends Phaser.Scene {
     const updates = this.questManager?.handleLessonAnswered(currentNpcId, result.lessonId, result) ?? [];
 
     this.latestQuestUpdateMessage = this.createQuestUpdateMessage(updates);
+    this.collectLessonRewards(result);
+    this.collectQuestRewards(updates);
+    this.showQuestRewardToast(updates);
     this.updateQuestStatusHud();
+    this.updateCollectionSummaryHud();
   }
 
   private updateQuestStatusHud(): void {
@@ -262,6 +274,89 @@ export class HaGiangScene extends Phaser.Scene {
       `Completed quests: ${completedQuestCount}`,
       this.latestQuestUpdateMessage,
     ]);
+  }
+
+  private createCollectionSummaryHud(): void {
+    this.collectionSummaryText = this.add.text(this.scale.width - 24, 116, '', {
+      align: 'right',
+      color: '#fff6c9',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      stroke: '#1f3523',
+      strokeThickness: 3,
+    });
+    this.collectionSummaryText.setOrigin(1, 0);
+    this.collectionSummaryText.setScrollFactor(0);
+    this.collectionSummaryText.setDepth(900);
+    this.updateCollectionSummaryHud();
+  }
+
+  private createRewardToast(): void {
+    this.rewardToast = new RewardToast(this);
+  }
+
+  private updateCollectionSummaryHud(): void {
+    this.collectionSummaryText?.setText(
+      `XP: ${this.totalXP} · Vocab: ${this.collectedVocab.size} · Stamps: ${this.collectedPassportStamps.size}`,
+    );
+  }
+
+  private collectLessonRewards(result: LessonAnswerResult): void {
+    if (result.status !== 'correct' || !result.isCorrect) {
+      return;
+    }
+
+    result.rewardVocab?.forEach((vocab) => {
+      this.collectedVocab.add(vocab);
+    });
+  }
+
+  private collectQuestRewards(updates: readonly QuestUpdate[]): void {
+    updates
+      .filter((update) => update.status === 'quest_completed')
+      .forEach((update) => {
+        const rewards = update.rewards;
+        this.totalXP += rewards?.xp ?? 0;
+        rewards?.vocab?.forEach((vocab) => {
+          this.collectedVocab.add(vocab);
+        });
+        rewards?.passport_stamps?.forEach((stamp) => {
+          this.collectedPassportStamps.add(stamp);
+        });
+      });
+  }
+
+  private showQuestRewardToast(updates: readonly QuestUpdate[]): void {
+    const completedUpdate = updates.find((update) => update.status === 'quest_completed' && update.questId);
+
+    if (!completedUpdate?.questId) {
+      return;
+    }
+
+    this.rewardToast?.show(this.createQuestRewardLines(completedUpdate));
+  }
+
+  private createQuestRewardLines(update: QuestUpdate): readonly string[] {
+    const questTitle = update.questId ? this.questManager?.getQuest(update.questId)?.title ?? update.questId : 'Quest';
+    return [`Hoàn thành nhiệm vụ: ${questTitle}`, ...this.createRewardLines(update.rewards)];
+  }
+
+  private createRewardLines(rewards: QuestRewardsContent | undefined): readonly string[] {
+    const lines: string[] = [];
+
+    if (rewards?.xp) {
+      lines.push(`+${rewards.xp} XP`);
+    }
+
+    if (rewards?.vocab && rewards.vocab.length > 0) {
+      lines.push(`Từ vựng: ${rewards.vocab.join(', ')}`);
+    }
+
+    if (rewards?.passport_stamps && rewards.passport_stamps.length > 0) {
+      lines.push(`Dấu hộ chiếu: ${rewards.passport_stamps.join(', ')}`);
+    }
+
+    return lines;
   }
 
   private createQuestUpdateMessage(updates: readonly QuestUpdate[]): string {

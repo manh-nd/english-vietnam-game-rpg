@@ -170,6 +170,10 @@ export class DialogueBox extends Phaser.GameObjects.Container {
       feedbackLines.push(`Giải thích: ${result.explanationVi}`);
     }
 
+    if (result.status === 'correct' && result.rewardVocab && result.rewardVocab.length > 0) {
+      feedbackLines.push(`Từ vựng nhận được: ${result.rewardVocab.join(', ')}`);
+    }
+
     if (result.hint && result.status !== 'correct') {
       feedbackLines.push(`Gợi ý: ${result.hint}`);
     }
