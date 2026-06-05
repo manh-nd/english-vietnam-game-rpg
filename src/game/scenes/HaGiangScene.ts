@@ -2,8 +2,10 @@ import Phaser from 'phaser';
 
 import { NpcSprite } from '../entities/NpcSprite';
 import type { ContentDatabase } from '../systems/ContentDatabase';
+import { NpcInteractionController } from '../systems/NpcInteractionController';
+import type { LessonAnswerResult, LessonManager } from '../systems/LessonManager';
 import type { NpcContent } from '../types/content';
-import type { LessonManager } from '../systems/LessonManager';
+import { DialogueBox } from '../ui/DialogueBox';
 
 export class HaGiangScene extends Phaser.Scene {
   public static readonly key = 'HaGiangScene';
@@ -15,9 +17,17 @@ export class HaGiangScene extends Phaser.Scene {
     npc_lan_homestay_host: new Phaser.Math.Vector2(430, 430),
   };
   private static readonly player_speed = 220;
+  private static readonly interactionDistance = 82;
+
   private player?: Phaser.GameObjects.Rectangle;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd?: Record<'up' | 'down' | 'left' | 'right', Phaser.Input.Keyboard.Key>;
+  private interactKey?: Phaser.Input.Keyboard.Key;
+  private dialogueBox?: DialogueBox;
+  private npcInteractionController?: NpcInteractionController;
+  private interactionPromptText?: Phaser.GameObjects.Text;
+  private npcSprites: NpcSprite[] = [];
+  private nearestNpc?: NpcSprite;
 
   public constructor() {
     super(HaGiangScene.key);
@@ -33,18 +43,21 @@ export class HaGiangScene extends Phaser.Scene {
       fontStyle: 'bold',
     });
 
-    this.add.text(24, 60, 'Move with WASD or arrow keys.', {
+    this.add.text(24, 60, 'Move with WASD or arrow keys. Click an NPC, or stand nearby and press E.', {
       color: '#eef7ee',
       fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
     });
 
     this.createContentDebugText();
+    this.createInteractionController();
 
     this.player = this.add.rectangle(400, 300, 34, 42, 0x2f5cff);
     this.player.setStrokeStyle(2, 0xffffff, 0.9);
 
     this.createAuthoredNpcs();
+    this.createInteractionPrompt();
+    this.createDialogueBox();
 
     this.cursors = this.input.keyboard?.createCursorKeys();
     this.wasd = this.input.keyboard?.addKeys({
@@ -53,10 +66,22 @@ export class HaGiangScene extends Phaser.Scene {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       right: Phaser.Input.Keyboard.KeyCodes.D,
     }) as Record<'up' | 'down' | 'left' | 'right', Phaser.Input.Keyboard.Key> | undefined;
+    this.interactKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
   }
 
   public update(_time: number, delta: number): void {
     if (!this.player) {
+      return;
+    }
+
+    this.updateNearestNpcPrompt();
+
+    if (this.dialogueBox?.isOpen()) {
+      return;
+    }
+
+    if (this.interactKey && Phaser.Input.Keyboard.JustDown(this.interactKey) && this.nearestNpc) {
+      this.startNpcInteraction(this.nearestNpc.npcId);
       return;
     }
 
@@ -113,6 +138,17 @@ export class HaGiangScene extends Phaser.Scene {
     });
   }
 
+  private createInteractionController(): void {
+    const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
+    const lessonManager = this.registry.get('lessonManager') as LessonManager | undefined;
+
+    if (!contentDatabase || !lessonManager) {
+      return;
+    }
+
+    this.npcInteractionController = new NpcInteractionController(contentDatabase, lessonManager);
+  }
+
   private createAuthoredNpcs(): void {
     const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
 
@@ -137,12 +173,16 @@ export class HaGiangScene extends Phaser.Scene {
         return;
       }
 
-      new NpcSprite({
+      const npcSprite = new NpcSprite({
         scene: this,
         npc,
         x: placement.x,
         y: placement.y,
       });
+      npcSprite.on(NpcSprite.selectedEvent, (npcId: string) => {
+        this.startNpcInteraction(npcId);
+      });
+      this.npcSprites.push(npcSprite);
       renderedNpcCount += 1;
     });
 
@@ -157,5 +197,83 @@ export class HaGiangScene extends Phaser.Scene {
       fontSize: '14px',
       lineSpacing: 4,
     });
+  }
+
+  private createInteractionPrompt(): void {
+    this.interactionPromptText = this.add.text(this.scale.width / 2, this.scale.height - 292, '', {
+      align: 'center',
+      color: '#fff6c9',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '16px',
+      stroke: '#1f3523',
+      strokeThickness: 4,
+    });
+    this.interactionPromptText.setOrigin(0.5, 0.5);
+    this.interactionPromptText.setScrollFactor(0);
+    this.interactionPromptText.setDepth(900);
+    this.interactionPromptText.setVisible(false);
+  }
+
+  private createDialogueBox(): void {
+    this.dialogueBox = new DialogueBox(this);
+    this.dialogueBox.on(DialogueBox.choiceSelectedEvent, (choiceIndex: number) => {
+      const result = this.npcInteractionController?.answerCurrentLesson(choiceIndex);
+
+      if (!result || !this.isLessonAnswerResult(result)) {
+        return;
+      }
+
+      this.dialogueBox?.showAnswerResult(result);
+    });
+  }
+
+  private startNpcInteraction(npcId: string): void {
+    if (!this.npcInteractionController || !this.dialogueBox) {
+      return;
+    }
+
+    const result = this.npcInteractionController.startNpcInteraction(npcId, HaGiangScene.haGiangLocationId);
+
+    if (result.ok && result.npc && result.lesson) {
+      this.dialogueBox.showLessonPrompt(result.npc.name, result.lesson);
+    }
+  }
+
+  private updateNearestNpcPrompt(): void {
+    if (!this.player || !this.interactionPromptText) {
+      return;
+    }
+
+    let nearestNpc: NpcSprite | undefined;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    this.npcSprites.forEach((npcSprite) => {
+      const distance = Phaser.Math.Distance.Between(this.player?.x ?? 0, this.player?.y ?? 0, npcSprite.x, npcSprite.y);
+
+      if (distance <= HaGiangScene.interactionDistance && distance < nearestDistance) {
+        nearestNpc = npcSprite;
+        nearestDistance = distance;
+      }
+    });
+
+    this.npcSprites.forEach((npcSprite) => {
+      npcSprite.setHighlighted(npcSprite === nearestNpc);
+    });
+
+    this.nearestNpc = nearestNpc;
+
+    if (!nearestNpc || this.dialogueBox?.isOpen()) {
+      this.interactionPromptText.setVisible(false);
+      return;
+    }
+
+    const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
+    const npc = contentDatabase?.getNpc(nearestNpc.npcId);
+    this.interactionPromptText.setText(`Press E to talk to ${npc?.name ?? 'NPC'}`);
+    this.interactionPromptText.setVisible(true);
+  }
+
+  private isLessonAnswerResult(result: LessonAnswerResult | object): result is LessonAnswerResult {
+    return 'choiceIndex' in result && 'isCorrect' in result && 'npcLine' in result;
   }
 }
