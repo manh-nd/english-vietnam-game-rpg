@@ -10,6 +10,8 @@ interface NpcSpriteOptions {
 }
 
 export class NpcSprite extends Phaser.GameObjects.Container {
+  public static readonly selectedEvent = 'npcSelected';
+
   public readonly npcId: string;
   public readonly locationId: string;
   public readonly introLessonId?: string;
@@ -56,6 +58,9 @@ export class NpcSprite extends Phaser.GameObjects.Container {
     });
     this.on(Phaser.Input.Events.POINTER_OUT, () => {
       this.setHighlighted(false);
+    });
+    this.on(Phaser.Input.Events.POINTER_DOWN, () => {
+      this.emit(NpcSprite.selectedEvent, this.npcId);
     });
 
     scene.add.existing(this as Phaser.GameObjects.GameObject);
