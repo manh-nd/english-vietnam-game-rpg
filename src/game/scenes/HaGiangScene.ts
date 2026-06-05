@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import { NpcSprite } from '../entities/NpcSprite';
 import type { ContentDatabase } from '../systems/ContentDatabase';
 import { NpcInteractionController } from '../systems/NpcInteractionController';
+import type { NpcInteractionResult, NpcInteractionStatus } from '../systems/NpcInteractionController';
 import type { LessonAnswerResult, LessonManager } from '../systems/LessonManager';
 import type { QuestManager, QuestUpdate } from '../systems/QuestManager';
 import type { NpcContent } from '../types/content';
@@ -32,6 +33,7 @@ export class HaGiangScene extends Phaser.Scene {
   private latestQuestUpdateMessage = 'Quest progress will appear here.';
   private npcSprites: NpcSprite[] = [];
   private nearestNpc?: NpcSprite;
+  private interactionInputPausedUntil = 0;
 
   public constructor() {
     super(HaGiangScene.key);
@@ -86,7 +88,12 @@ export class HaGiangScene extends Phaser.Scene {
       return;
     }
 
-    if (this.interactKey && Phaser.Input.Keyboard.JustDown(this.interactKey) && this.nearestNpc) {
+    if (
+      this.interactKey &&
+      this.time.now >= this.interactionInputPausedUntil &&
+      Phaser.Input.Keyboard.JustDown(this.interactKey) &&
+      this.nearestNpc
+    ) {
       this.startNpcInteraction(this.nearestNpc.npcId);
       return;
     }
@@ -127,16 +134,8 @@ export class HaGiangScene extends Phaser.Scene {
     }
 
     const lessons = contentDatabase.getLessons();
-    const firstLesson = lessons[0];
-    const sampleResult = firstLesson
-      ? lessonManager.checkAnswer(firstLesson.id, firstLesson.correct_choice_index, firstLesson.location_id)
-      : undefined;
-    const sampleStatus = sampleResult ? sampleResult.status : 'no_lessons';
 
-    this.add.text(24, 92, [
-      `Content loaded: ${contentDatabase.getLocations().length} locations, ${contentDatabase.getNpcs().length} NPCs, ${lessons.length} lessons.`,
-      `Sample lesson check: ${sampleStatus}.`,
-    ], {
+    this.add.text(24, 92, `Content: ${contentDatabase.getLocations().length} locations · ${contentDatabase.getNpcs().length} NPCs · ${lessons.length} lessons`, {
       color: '#eef7ee',
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
@@ -192,7 +191,7 @@ export class HaGiangScene extends Phaser.Scene {
       renderedNpcCount += 1;
     });
 
-    const debugLines = [`Ha Giang NPCs rendered: ${renderedNpcCount}/${haGiangNpcs.length}.`];
+    const debugLines = [`NPCs: ${renderedNpcCount}/${haGiangNpcs.length} ready.`];
     if (missingPlacementIds.length > 0) {
       debugLines.push(`Missing NPC placements: ${missingPlacementIds.join(', ')}.`);
     }
@@ -288,10 +287,10 @@ export class HaGiangScene extends Phaser.Scene {
 
     const firstUpdate = updates[0];
     if (firstUpdate.status === 'incorrect_answer') {
-      return 'Quest progress unchanged: answer the lesson correctly to progress.';
+      return 'Quest unchanged. Try the lesson again.';
     }
     if (firstUpdate.status === 'lesson_not_required') {
-      return 'Correct answer. No active quest requires this lesson right now.';
+      return 'Correct answer. No quest progress for this lesson.';
     }
     if (firstUpdate.status === 'quest_not_found') {
       return 'Quest progress unavailable: quest content was not found.';
@@ -320,10 +319,19 @@ export class HaGiangScene extends Phaser.Scene {
 
   private createDialogueBox(): void {
     this.dialogueBox = new DialogueBox(this);
+    this.dialogueBox.on(DialogueBox.closedEvent, () => {
+      this.npcInteractionController?.clear();
+      this.interactionInputPausedUntil = this.time.now + 120;
+    });
     this.dialogueBox.on(DialogueBox.choiceSelectedEvent, (choiceIndex: number) => {
       const result = this.npcInteractionController?.answerCurrentLesson(choiceIndex);
 
-      if (!result || !this.isLessonAnswerResult(result)) {
+      if (!result) {
+        return;
+      }
+
+      if (!this.isLessonAnswerResult(result)) {
+        this.showInteractionFailure(result);
         return;
       }
 
@@ -333,7 +341,7 @@ export class HaGiangScene extends Phaser.Scene {
   }
 
   private startNpcInteraction(npcId: string): void {
-    if (!this.npcInteractionController || !this.dialogueBox) {
+    if (!this.npcInteractionController || !this.dialogueBox || this.dialogueBox.isOpen()) {
       return;
     }
 
@@ -341,7 +349,10 @@ export class HaGiangScene extends Phaser.Scene {
 
     if (result.ok && result.npc && result.lesson) {
       this.dialogueBox.showLessonPrompt(result.npc.name, result.lesson);
+      return;
     }
+
+    this.showInteractionFailure(result);
   }
 
   private updateNearestNpcPrompt(): void {
@@ -378,7 +389,23 @@ export class HaGiangScene extends Phaser.Scene {
     this.interactionPromptText.setVisible(true);
   }
 
-  private isLessonAnswerResult(result: LessonAnswerResult | object): result is LessonAnswerResult {
+  private showInteractionFailure(result: NpcInteractionResult): void {
+    this.dialogueBox?.showSystemMessage('Interaction unavailable', this.getInteractionFailureMessage(result.status));
+  }
+
+  private getInteractionFailureMessage(status: NpcInteractionStatus): string {
+    const messages: Record<NpcInteractionStatus, string> = {
+      ok: 'Interaction is ready.',
+      npc_not_found: 'NPC is not available.',
+      npc_missing_intro_lesson: 'This NPC does not have a lesson yet.',
+      lesson_not_found: 'Lesson content is missing.',
+      wrong_location: 'This lesson belongs to another location.',
+    };
+
+    return messages[status];
+  }
+
+  private isLessonAnswerResult(result: LessonAnswerResult | NpcInteractionResult): result is LessonAnswerResult {
     return 'choiceIndex' in result && 'isCorrect' in result && 'npcLine' in result;
   }
 }
