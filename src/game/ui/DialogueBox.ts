@@ -10,6 +10,7 @@ interface ChoiceRow {
 
 export class DialogueBox extends Phaser.GameObjects.Container {
   public static readonly choiceSelectedEvent = 'choiceSelected';
+  public static readonly closedEvent = 'closed';
 
   private readonly background: Phaser.GameObjects.Rectangle;
   private readonly npcNameText: Phaser.GameObjects.Text;
@@ -28,6 +29,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private choiceTexts: string[] = [];
   private selectedChoiceIndex = 0;
   private open = false;
+  private answeredCorrectly = false;
 
   public constructor(scene: Phaser.Scene) {
     const width = Math.min(scene.scale.width - 48, 720);
@@ -100,6 +102,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
     this.clearChoices();
     this.choiceTexts = [...lesson.choices];
     this.selectedChoiceIndex = 0;
+    this.answeredCorrectly = false;
 
     this.npcNameText.setText(npcName);
     this.npcLineText.setText(lesson.npc_line);
@@ -119,6 +122,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
     const feedbackLines: string[] = [];
 
     if (result.status === 'correct') {
+      this.answeredCorrectly = true;
       feedbackLines.push('Correct!');
     } else if (result.status === 'incorrect') {
       feedbackLines.push('Try again: that answer does not fit this moment.');
@@ -147,12 +151,31 @@ export class DialogueBox extends Phaser.GameObjects.Container {
     }
 
     this.feedbackText.setText(feedbackLines.join('\n'));
+    this.updateChoiceHighlights();
+  }
+
+  public showSystemMessage(title: string, message: string): void {
+    this.clearChoices();
+    this.answeredCorrectly = false;
+    this.selectedChoiceIndex = 0;
+    this.npcNameText.setText(title);
+    this.npcLineText.setText(message);
+    this.feedbackText.setText('Press Escape to close.');
+    this.open = true;
+    this.setVisible(true);
+    this.setActive(true);
   }
 
   public close(): void {
+    if (!this.open) {
+      return;
+    }
+
     this.open = false;
+    this.answeredCorrectly = false;
     this.setVisible(false);
     this.setActive(false);
+    this.emit(DialogueBox.closedEvent);
   }
 
   public isOpen(): boolean {
@@ -228,7 +251,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   }
 
   private moveSelectedChoice(direction: number): void {
-    if (!this.isOpen() || this.choiceRows.length === 0) {
+    if (!this.isOpen() || this.answeredCorrectly || this.choiceRows.length === 0) {
       return;
     }
 
@@ -237,7 +260,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   }
 
   private confirmSelectedChoice(): void {
-    if (!this.isOpen() || this.choiceRows.length === 0) {
+    if (!this.isOpen() || this.answeredCorrectly || this.choiceRows.length === 0) {
       return;
     }
 
@@ -247,7 +270,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private selectChoice(choiceIndex: number): void {
     const choiceText = this.choiceTexts[choiceIndex];
 
-    if (!this.isOpen() || choiceText === undefined) {
+    if (!this.isOpen() || this.answeredCorrectly || choiceText === undefined) {
       return;
     }
 
@@ -259,9 +282,10 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private updateChoiceHighlights(): void {
     this.choiceRows.forEach((row, index) => {
       const isSelected = index === this.selectedChoiceIndex;
-      row.background.setFillStyle(isSelected ? 0x3b5f47 : 0x263b30, 0.95);
-      row.background.setStrokeStyle(isSelected ? 2 : 1, isSelected ? 0xffe08a : 0x8da894, 0.9);
-      row.text.setColor(isSelected ? '#fff3a8' : '#f4fff6');
+      const isLocked = this.answeredCorrectly;
+      row.background.setFillStyle(isLocked ? 0x223027 : isSelected ? 0x3b5f47 : 0x263b30, 0.95);
+      row.background.setStrokeStyle(isSelected ? 2 : 1, isLocked ? 0x6f8275 : isSelected ? 0xffe08a : 0x8da894, 0.9);
+      row.text.setColor(isLocked ? '#b9c8be' : isSelected ? '#fff3a8' : '#f4fff6');
     });
   }
 }
