@@ -10,11 +10,18 @@
       "Practice asking for directions.",
       "Reach the viewpoint marker."
     ],
-    "required_lesson_ids": ["lesson_greeting_at_viewpoint", "lesson_asking_for_directions"],
+    "required_lesson_ids": [
+      "lesson_greeting_at_viewpoint",
+      "lesson_asking_for_directions"
+    ],
     "rewards": {
-      "passport_stamps": ["stamp_viewpoint_visitor"],
+      "passport_stamps": [
+        "stamp_viewpoint_visitor"
+      ],
       "xp": 50
-    }
+    },
+    "description": "Ask May for directions and follow the road to the viewpoint.",
+    "state": "not_started"
   },
   {
     "id": "quest_repair_vocabulary",
@@ -27,11 +34,18 @@
       "Make a polite repair request.",
       "Confirm the repair price."
     ],
-    "required_lesson_ids": ["lesson_describing_bike_problem", "lesson_polite_repair_request"],
+    "required_lesson_ids": [
+      "lesson_describing_bike_problem",
+      "lesson_polite_repair_request"
+    ],
     "rewards": {
-      "passport_stamps": ["stamp_repair_helper"],
+      "passport_stamps": [
+        "stamp_repair_helper"
+      ],
       "xp": 60
-    }
+    },
+    "description": "Help Binh understand a traveler's simple motorbike problem in English.",
+    "state": "not_started"
   },
   {
     "id": "quest_safe_route_plan",
@@ -44,11 +58,18 @@
       "Choose safe travel phrases.",
       "Tell May your route plan."
     ],
-    "required_lesson_ids": ["lesson_weather_check", "lesson_talking_about_plans"],
+    "required_lesson_ids": [
+      "lesson_weather_check",
+      "lesson_talking_about_plans"
+    ],
     "rewards": {
-      "passport_stamps": ["stamp_safe_traveler"],
+      "passport_stamps": [
+        "stamp_safe_traveler"
+      ],
       "xp": 75
-    }
+    },
+    "description": "Review weather and route advice before continuing around the loop.",
+    "state": "not_started"
   },
   {
     "id": "quest_homestay_dinner",
@@ -61,11 +82,19 @@
       "Order tea and food politely.",
       "Say thank you after dinner."
     ],
-    "required_lesson_ids": ["lesson_homestay_introduction", "lesson_ordering_tea", "lesson_saying_thank_you"],
+    "required_lesson_ids": [
+      "lesson_homestay_introduction",
+      "lesson_ordering_tea",
+      "lesson_saying_thank_you"
+    ],
     "rewards": {
-      "passport_stamps": ["stamp_homestay_guest"],
+      "passport_stamps": [
+        "stamp_homestay_guest"
+      ],
       "xp": 90
-    }
+    },
+    "description": "Join Lan's family dinner and practice friendly English conversation.",
+    "state": "not_started"
   },
   {
     "id": "quest_passport_stamp",
@@ -91,8 +120,12 @@
       "lesson_sharing_travel_story"
     ],
     "rewards": {
-      "passport_stamps": ["stamp_ha_giang_loop"],
+      "passport_stamps": [
+        "stamp_ha_giang_loop"
+      ],
       "xp": 150
-    }
+    },
+    "description": "Review your Ha Giang conversations and earn the location completion stamp.",
+    "state": "not_started"
   }
 ]

@@ -4,29 +4,52 @@
     "name": "May",
     "role": "Local guide",
     "location_id": "ha_giang_loop",
-    "personality": ["patient", "encouraging", "practical"],
-    "teaches": ["directions", "safety phrases", "travel plans"],
+    "personality": "patient, encouraging, practical",
+    "teaches": [
+      "directions",
+      "safety phrases",
+      "travel plans"
+    ],
     "intro_lesson_id": "lesson_greeting_at_viewpoint",
-    "quest_ids": ["quest_find_the_viewpoint", "quest_safe_route_plan"]
+    "quest_ids": [
+      "quest_find_the_viewpoint",
+      "quest_safe_route_plan"
+    ],
+    "english_level": "A2"
   },
   {
     "id": "npc_binh_mechanic",
     "name": "Binh",
     "role": "Motorbike mechanic",
     "location_id": "ha_giang_loop",
-    "personality": ["direct", "helpful", "good-humored"],
-    "teaches": ["problem descriptions", "polite requests", "numbers"],
+    "personality": "direct, helpful, good-humored",
+    "teaches": [
+      "problem descriptions",
+      "polite requests",
+      "numbers"
+    ],
     "intro_lesson_id": "lesson_describing_bike_problem",
-    "quest_ids": ["quest_repair_vocabulary"]
+    "quest_ids": [
+      "quest_repair_vocabulary"
+    ],
+    "english_level": "A2"
   },
   {
     "id": "npc_lan_homestay_host",
     "name": "Lan",
     "role": "Homestay host",
     "location_id": "ha_giang_loop",
-    "personality": ["warm", "curious", "welcoming"],
-    "teaches": ["introductions", "food ordering", "gratitude"],
+    "personality": "warm, curious, welcoming",
+    "teaches": [
+      "introductions",
+      "food ordering",
+      "gratitude"
+    ],
     "intro_lesson_id": "lesson_homestay_introduction",
-    "quest_ids": ["quest_homestay_dinner", "quest_passport_stamp"]
+    "quest_ids": [
+      "quest_homestay_dinner",
+      "quest_passport_stamp"
+    ],
+    "english_level": "A2"
   }
 ]

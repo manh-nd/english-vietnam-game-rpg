@@ -28,6 +28,59 @@ The validator checks that:
 - Every location `recommended_lessons` entry exists in `data/lessons.json`.
 - Every passport stamp ID authored in locations, quests, or lessons is a non-empty string.
 
+
+## Gameplay Schema Rules
+
+In addition to valid JSON syntax and cross-file references, the validator enforces the gameplay fields required by the authored Ha Giang Loop lesson and quest loop.
+
+### Lessons (`data/lessons.json`)
+
+Every lesson must include:
+
+- `id` — non-empty string.
+- `location_id` — non-empty string reference to an existing location ID.
+- `npc_id` — non-empty string reference to an existing NPC ID.
+- `skill` — non-empty string describing the practiced English skill.
+- `npc_line` — non-empty string for the NPC prompt shown to the player.
+- `choices` — non-empty array of non-empty strings for player answer choices.
+- `correct_choice_index` — integer index within the `choices` array.
+- `hint` — non-empty string for learner guidance.
+- `explanation_vi` — non-empty Vietnamese explanation of the correct answer.
+- `reward_vocab` — array of non-empty strings awarded or reinforced by the lesson.
+
+### Quests (`data/quests.json`)
+
+Every quest must include:
+
+- `title` — non-empty string.
+- `description` — non-empty string for player-facing quest text.
+- `state` — one of `not_started`, `active`, or `completed`.
+- `required_lesson_ids` — array whose entries reference existing lesson IDs.
+- `rewards` — object containing quest rewards.
+
+Optional quest reward fields are validated when present:
+
+- `rewards.xp` — non-negative integer.
+- `rewards.vocab` — array of non-empty strings.
+- `rewards.passport_stamps` — array of non-empty strings.
+
+### NPCs (`data/npcs.json`)
+
+Every NPC must include:
+
+- `name` — non-empty string.
+- `role` — non-empty string.
+- `personality` — non-empty string.
+- `english_level` — one of `A1`, `A2`, `B1`, `B2`, `C1`, or `C2`.
+
+### Locations (`data/locations.json`)
+
+Every location must include:
+
+- `name` — non-empty string.
+- `region` — non-empty string.
+- `recommended_lessons` — array whose entries reference existing lesson IDs.
+
 ## Running Validation
 
 Run the content validator from the repository root:
