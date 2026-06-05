@@ -1,0 +1,26 @@
+name: Content Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate authored content
+        run: python tools/validate_content.py
+
+      - name: Compile content validator
+        run: python -m py_compile tools/validate_content.py
+
+      - name: Validate JSON data files
+        run: |
+          for file in data/*.json; do
+            python -m json.tool "$file" >/dev/null
+          done
