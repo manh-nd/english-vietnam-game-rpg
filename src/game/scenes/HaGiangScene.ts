@@ -4,6 +4,7 @@ import { NpcSprite } from '../entities/NpcSprite';
 import type { ContentDatabase } from '../systems/ContentDatabase';
 import { NpcInteractionController } from '../systems/NpcInteractionController';
 import type { LessonAnswerResult, LessonManager } from '../systems/LessonManager';
+import type { QuestManager, QuestUpdate } from '../systems/QuestManager';
 import type { NpcContent } from '../types/content';
 import { DialogueBox } from '../ui/DialogueBox';
 
@@ -26,6 +27,9 @@ export class HaGiangScene extends Phaser.Scene {
   private dialogueBox?: DialogueBox;
   private npcInteractionController?: NpcInteractionController;
   private interactionPromptText?: Phaser.GameObjects.Text;
+  private questStatusText?: Phaser.GameObjects.Text;
+  private questManager?: QuestManager;
+  private latestQuestUpdateMessage = 'Quest progress will appear here.';
   private npcSprites: NpcSprite[] = [];
   private nearestNpc?: NpcSprite;
 
@@ -51,12 +55,14 @@ export class HaGiangScene extends Phaser.Scene {
 
     this.createContentDebugText();
     this.createInteractionController();
+    this.initializeQuestProgression();
 
     this.player = this.add.rectangle(400, 300, 34, 42, 0x2f5cff);
     this.player.setStrokeStyle(2, 0xffffff, 0.9);
 
     this.createAuthoredNpcs();
     this.createInteractionPrompt();
+    this.createQuestStatusHud();
     this.createDialogueBox();
 
     this.cursors = this.input.keyboard?.createCursorKeys();
@@ -199,6 +205,104 @@ export class HaGiangScene extends Phaser.Scene {
     });
   }
 
+  private initializeQuestProgression(): void {
+    this.questManager = this.registry.get('questManager') as QuestManager | undefined;
+
+    if (!this.questManager) {
+      this.latestQuestUpdateMessage = 'QuestManager is not available yet.';
+      return;
+    }
+
+    const startedUpdates = this.questManager
+      .getQuests()
+      .filter((quest) => quest.location_id === HaGiangScene.haGiangLocationId)
+      .map((quest) => this.questManager?.startQuest(quest.id))
+      .filter((update): update is QuestUpdate => update !== undefined && update.ok);
+
+    this.latestQuestUpdateMessage =
+      startedUpdates.length > 0
+        ? `Started ${startedUpdates.length} Ha Giang quest${startedUpdates.length === 1 ? '' : 's'}.`
+        : 'Ha Giang quests are already active.';
+  }
+
+  private createQuestStatusHud(): void {
+    this.questStatusText = this.add.text(this.scale.width - 24, 24, '', {
+      align: 'right',
+      color: '#f4fff6',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '14px',
+      lineSpacing: 4,
+      stroke: '#1f3523',
+      strokeThickness: 3,
+      wordWrap: { width: 300 },
+    });
+    this.questStatusText.setOrigin(1, 0);
+    this.questStatusText.setScrollFactor(0);
+    this.questStatusText.setDepth(900);
+    this.updateQuestStatusHud();
+  }
+
+  private handleQuestProgress(result: LessonAnswerResult): void {
+    const currentNpcId = this.npcInteractionController?.getCurrentNpcId() ?? '';
+    const updates = this.questManager?.handleLessonAnswered(currentNpcId, result.lessonId, result) ?? [];
+
+    this.latestQuestUpdateMessage = this.createQuestUpdateMessage(updates);
+    this.updateQuestStatusHud();
+  }
+
+  private updateQuestStatusHud(): void {
+    if (!this.questStatusText) {
+      return;
+    }
+
+    const activeQuestCount = this.questManager?.getActiveQuests().length ?? 0;
+    const completedQuestCount = this.questManager?.getCompletedQuests().length ?? 0;
+
+    this.questStatusText.setText([
+      `Active quests: ${activeQuestCount}`,
+      `Completed quests: ${completedQuestCount}`,
+      this.latestQuestUpdateMessage,
+    ]);
+  }
+
+  private createQuestUpdateMessage(updates: readonly QuestUpdate[]): string {
+    if (updates.length === 0) {
+      return 'No quest update.';
+    }
+
+    const completedUpdate = updates.find((update) => update.status === 'quest_completed');
+    if (completedUpdate?.questId) {
+      const questTitle = this.questManager?.getQuest(completedUpdate.questId)?.title ?? completedUpdate.questId;
+      const xp = completedUpdate.rewards?.xp;
+      return xp ? `Quest completed: ${questTitle} (+${xp} XP).` : `Quest completed: ${questTitle}.`;
+    }
+
+    const progressUpdate = updates.find((update) => update.status === 'ok' && update.progress);
+    if (progressUpdate?.progress) {
+      const questTitle =
+        this.questManager?.getQuest(progressUpdate.progress.questId)?.title ?? progressUpdate.progress.questId;
+      const completedLessonCount = progressUpdate.progress.completedLessonIds.length;
+      const requiredLessonCount = progressUpdate.progress.requiredLessonIds.length;
+      return `Quest progress: ${questTitle} (${completedLessonCount}/${requiredLessonCount}).`;
+    }
+
+    const firstUpdate = updates[0];
+    if (firstUpdate.status === 'incorrect_answer') {
+      return 'Quest progress unchanged: answer the lesson correctly to progress.';
+    }
+    if (firstUpdate.status === 'lesson_not_required') {
+      return 'Correct answer. No active quest requires this lesson right now.';
+    }
+    if (firstUpdate.status === 'quest_not_found') {
+      return 'Quest progress unavailable: quest content was not found.';
+    }
+    if (firstUpdate.status === 'quest_not_active') {
+      return 'Quest progress unchanged: the quest is not active.';
+    }
+
+    return 'Quest progress unchanged.';
+  }
+
   private createInteractionPrompt(): void {
     this.interactionPromptText = this.add.text(this.scale.width / 2, this.scale.height - 292, '', {
       align: 'center',
@@ -224,6 +328,7 @@ export class HaGiangScene extends Phaser.Scene {
       }
 
       this.dialogueBox?.showAnswerResult(result);
+      this.handleQuestProgress(result);
     });
   }
 
