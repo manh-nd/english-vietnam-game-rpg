@@ -16,11 +16,12 @@ export class HaGiangScene extends Phaser.Scene {
 
   private static readonly haGiangLocationId = 'ha_giang_loop';
   private static readonly debugMode = false;
-  private static readonly npcPlacements: Readonly<Record<string, Phaser.Math.Vector2>> = {
+  private static readonly npcLocalPlacements: Readonly<Record<string, Phaser.Math.Vector2>> = {
     npc_may_guide: new Phaser.Math.Vector2(252, 214),
     npc_binh_mechanic: new Phaser.Math.Vector2(536, 250),
     npc_lan_homestay_host: new Phaser.Math.Vector2(452, 438),
   };
+  private static readonly playerStartLocalPosition = new Phaser.Math.Vector2(360, 340);
   private static readonly playerSpeed = 220;
   private static readonly playerWidth = 34;
   private static readonly playerHeight = 42;
@@ -53,7 +54,8 @@ export class HaGiangScene extends Phaser.Scene {
   public create(): void {
     this.cameras.main.setBackgroundColor('#3f8f4d');
 
-    this.mapLayout = new HaGiangMap(this).draw();
+    const haGiangMap = new HaGiangMap(this);
+    this.mapLayout = haGiangMap.draw();
 
     this.add.rectangle(252, 37, 466, 58, 0x1f3523, 0.38).setDepth(850);
     this.add.text(24, 24, 'English Vietnam RPG - Ha Giang Loop', {
@@ -135,7 +137,8 @@ export class HaGiangScene extends Phaser.Scene {
   }
 
   private createPlayer(): void {
-    const player = this.add.container(360, 340);
+    const startPosition = this.getWorldMapPoint(HaGiangScene.playerStartLocalPosition);
+    const player = this.add.container(startPosition.x, startPosition.y);
     const shadow = this.add.ellipse(0, 18, 38, 14, 0x1f3523, 0.32);
     const body = this.add.rectangle(0, 0, HaGiangScene.playerWidth, HaGiangScene.playerHeight, 0x2f5cff);
     body.setStrokeStyle(3, 0xffffff, 0.94);
@@ -288,18 +291,19 @@ export class HaGiangScene extends Phaser.Scene {
     let renderedNpcCount = 0;
 
     haGiangNpcs.forEach((npc: NpcContent) => {
-      const placement = HaGiangScene.npcPlacements[npc.id];
+      const placement = HaGiangScene.npcLocalPlacements[npc.id];
 
       if (!placement) {
         missingPlacementIds.push(npc.id);
         return;
       }
 
+      const worldPlacement = this.getWorldMapPoint(placement);
       const npcSprite = new NpcSprite({
         scene: this,
         npc,
-        x: placement.x,
-        y: placement.y,
+        x: worldPlacement.x,
+        y: worldPlacement.y,
       });
       npcSprite.on(NpcSprite.selectedEvent, (npcId: string) => {
         this.startNpcInteraction(npcId);
@@ -324,6 +328,13 @@ export class HaGiangScene extends Phaser.Scene {
         })
         .setDepth(900);
     }
+  }
+
+  private getWorldMapPoint(localPoint: Phaser.Math.Vector2): Phaser.Math.Vector2 {
+    return new Phaser.Math.Vector2(
+      (this.mapLayout?.mapOffsetX ?? 0) + localPoint.x,
+      (this.mapLayout?.mapOffsetY ?? 0) + localPoint.y,
+    );
   }
 
   private initializeQuestProgression(): void {
