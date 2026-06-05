@@ -467,10 +467,36 @@ export class HaGiangScene extends Phaser.Scene {
     }
 
     if (rewards?.passport_stamps && rewards.passport_stamps.length > 0) {
-      lines.push(`Dấu hộ chiếu: ${rewards.passport_stamps.join(', ')}`);
+      lines.push(`Dấu hộ chiếu: ${rewards.passport_stamps.map((stampId) => this.getPassportStampLabel(stampId)).join(', ')}`);
     }
 
     return lines;
+  }
+
+  private getPassportStampLabel(stampId: string): string {
+    const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
+    const locationStampTitle = contentDatabase
+      ?.getLocations()
+      .map((location) => location.passport_stamp)
+      .find((passportStamp): passportStamp is { id: string; title: string } =>
+        typeof passportStamp === 'object' &&
+        passportStamp !== null &&
+        'id' in passportStamp &&
+        'title' in passportStamp &&
+        passportStamp.id === stampId &&
+        typeof passportStamp.title === 'string',
+      )?.title;
+
+    if (locationStampTitle) {
+      return locationStampTitle;
+    }
+
+    return stampId
+      .replace(/^stamp_/, '')
+      .split('_')
+      .filter((word) => word.length > 0)
+      .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+      .join(' ');
   }
 
   private createQuestUpdateMessage(updates: readonly QuestUpdate[]): string {
