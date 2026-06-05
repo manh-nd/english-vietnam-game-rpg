@@ -20,12 +20,20 @@ func _ready() -> void:
 	clear()
 
 func _input(event: InputEvent) -> void:
-	if not visible or _choice_buttons.is_empty():
+	if not visible:
 		return
 
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
 		if not key_event.pressed or key_event.echo:
+			return
+
+		if key_event.keycode == KEY_ESCAPE:
+			close()
+			get_viewport().set_input_as_handled()
+			return
+
+		if _choice_buttons.is_empty():
 			return
 
 		match key_event.keycode:
@@ -72,6 +80,10 @@ func show_answer_result(result: Dictionary) -> void:
 		feedback_lines.append("Explanation: %s" % explanation)
 
 	hint_label.text = "\n".join(feedback_lines)
+
+func close() -> void:
+	clear()
+	visible = false
 
 func clear() -> void:
 	npc_name_label.text = ""
