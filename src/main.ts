@@ -2,13 +2,14 @@ import Phaser from 'phaser';
 
 import { BootScene } from './game/scenes/BootScene';
 import { HaGiangScene } from './game/scenes/HaGiangScene';
+import './style.css';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: 800,
-  height: 600,
-  backgroundColor: '#3f8f4d',
+  width: 1280,
+  height: 720,
+  backgroundColor: '#173324',
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,

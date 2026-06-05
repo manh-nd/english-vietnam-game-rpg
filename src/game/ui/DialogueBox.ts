@@ -43,7 +43,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
 
   public constructor(scene: Phaser.Scene) {
     const width = Math.min(scene.scale.width - 48, 720);
-    const height = 330;
+    const height = 420;
     const x = (scene.scale.width - width) / 2;
     const y = scene.scale.height - height - 24;
 

@@ -1,6 +1,10 @@
 import Phaser from 'phaser';
 
 export interface HaGiangMapLayout {
+  readonly authoredMapWidth: number;
+  readonly authoredMapHeight: number;
+  readonly mapOffsetX: number;
+  readonly mapOffsetY: number;
   readonly playableBounds: Phaser.Geom.Rectangle;
   readonly obstacles: readonly Phaser.Geom.Rectangle[];
 }
@@ -17,13 +21,25 @@ interface SignpostOptions extends WorldLabelOptions {
 }
 
 export class HaGiangMap {
+  public static readonly authoredMapWidth = 800;
+  public static readonly authoredMapHeight = 600;
+
   private readonly scene: Phaser.Scene;
+  private readonly mapOffsetX: number;
+  private readonly mapOffsetY: number;
   private readonly playableBounds: Phaser.Geom.Rectangle;
   private readonly obstacles: Phaser.Geom.Rectangle[] = [];
 
   public constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.playableBounds = new Phaser.Geom.Rectangle(48, 104, scene.scale.width - 96, scene.scale.height - 136);
+    this.mapOffsetX = (scene.scale.width - HaGiangMap.authoredMapWidth) / 2;
+    this.mapOffsetY = (scene.scale.height - HaGiangMap.authoredMapHeight) / 2;
+    this.playableBounds = this.worldRect(
+      48,
+      104,
+      HaGiangMap.authoredMapWidth - 96,
+      HaGiangMap.authoredMapHeight - 136,
+    );
   }
 
   public draw(): HaGiangMapLayout {
@@ -35,18 +51,39 @@ export class HaGiangMap {
     this.drawBoundaryHint();
 
     return {
+      authoredMapWidth: HaGiangMap.authoredMapWidth,
+      authoredMapHeight: HaGiangMap.authoredMapHeight,
+      mapOffsetX: this.mapOffsetX,
+      mapOffsetY: this.mapOffsetY,
       playableBounds: this.playableBounds,
       obstacles: this.obstacles,
     };
   }
 
+  public worldX(x: number): number {
+    return this.mapOffsetX + x;
+  }
+
+  public worldY(y: number): number {
+    return this.mapOffsetY + y;
+  }
+
+  public worldRect(x: number, y: number, width: number, height: number): Phaser.Geom.Rectangle {
+    return new Phaser.Geom.Rectangle(this.worldX(x), this.worldY(y), width, height);
+  }
+
+  public worldPoint(x: number, y: number): Phaser.Math.Vector2 {
+    return new Phaser.Math.Vector2(this.worldX(x), this.worldY(y));
+  }
+
   private drawGroundWash(): void {
-    this.scene.add.rectangle(400, 328, 720, 448, 0x5dad5b, 0.28).setDepth(0);
-    this.scene.add.rectangle(400, 328, 682, 410, 0x74bf66, 0.18).setDepth(0);
+    this.scene.add.rectangle(this.worldX(400), this.worldY(328), 720, 448, 0x5dad5b, 0.28).setDepth(0);
+    this.scene.add.rectangle(this.worldX(400), this.worldY(328), 682, 410, 0x74bf66, 0.18).setDepth(0);
   }
 
   private drawMountainBackdrop(): void {
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(1);
 
     graphics.fillStyle(0x2f6f47, 0.7);
@@ -67,6 +104,7 @@ export class HaGiangMap {
 
   private drawRoad(): void {
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(2);
 
     this.strokeRoadPath(graphics, 56, 0xc79a5c, 0.92, [
@@ -161,6 +199,7 @@ export class HaGiangMap {
 
   private drawViewpointArea(): void {
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(3);
     graphics.fillStyle(0x7dc7a6, 0.86);
     graphics.fillRoundedRect(172, 142, 178, 120, 18);
@@ -177,9 +216,10 @@ export class HaGiangMap {
 
   private drawMechanicStallArea(): void {
     const stall = new Phaser.Geom.Rectangle(578, 248, 74, 58);
-    this.obstacles.push(stall);
+    this.obstacles.push(this.worldRect(stall.x, stall.y, stall.width, stall.height));
 
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(3);
     graphics.fillStyle(0xb9a275, 0.55);
     graphics.fillRoundedRect(506, 210, 176, 124, 16);
@@ -198,9 +238,10 @@ export class HaGiangMap {
 
   private drawHomestayArea(): void {
     const house = new Phaser.Geom.Rectangle(490, 416, 104, 74);
-    this.obstacles.push(house);
+    this.obstacles.push(this.worldRect(house.x, house.y, house.width, house.height));
 
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(3);
     graphics.fillStyle(0x8bcf76, 0.68);
     graphics.fillRoundedRect(392, 374, 236, 142, 20);
@@ -224,9 +265,10 @@ export class HaGiangMap {
       new Phaser.Geom.Rectangle(104, 500, 76, 46),
       new Phaser.Geom.Rectangle(680, 488, 72, 52),
     ];
-    this.obstacles.push(...rockRects);
+    this.obstacles.push(...rockRects.map((rock) => this.worldRect(rock.x, rock.y, rock.width, rock.height)));
 
     const graphics = this.scene.add.graphics();
+    graphics.setPosition(this.mapOffsetX, this.mapOffsetY);
     graphics.setDepth(4);
     graphics.fillStyle(0x5c6a5e, 0.94);
     rockRects.forEach((rock) => {
@@ -252,20 +294,31 @@ export class HaGiangMap {
   private drawSignpost({ x, y, text, direction = 'right' }: SignpostOptions): void {
     const arrowOffset = direction === 'right' ? 76 : -10;
 
-    this.scene.add.rectangle(x, y + 30, 6, 44, 0x67462f, 0.98).setDepth(7);
+    this.scene.add.rectangle(this.worldX(x), this.worldY(y + 30), 6, 44, 0x67462f, 0.98).setDepth(7);
     this.scene.add
-      .rectangle(x + 48, y + 9, 104, 28, 0xf4dfa6, 0.98)
+      .rectangle(this.worldX(x + 48), this.worldY(y + 9), 104, 28, 0xf4dfa6, 0.98)
       .setDepth(7)
       .setStrokeStyle(2, 0x6f4f32, 0.85);
     this.scene.add
-      .triangle(x + arrowOffset, y + 9, 0, 0, direction === 'right' ? 18 : -18, 14, 0, 28, 0xf4dfa6, 0.98)
+      .triangle(
+        this.worldX(x + arrowOffset),
+        this.worldY(y + 9),
+        0,
+        0,
+        direction === 'right' ? 18 : -18,
+        14,
+        0,
+        28,
+        0xf4dfa6,
+        0.98,
+      )
       .setDepth(7)
       .setStrokeStyle(2, 0x6f4f32, 0.85);
     this.drawWorldLabel({ x: x + 48, y: y + 9, text, width: 96 });
   }
 
   private drawWorldLabel({ x, y, text, width = 110 }: WorldLabelOptions): void {
-    const label = this.scene.add.text(x, y, text, {
+    const label = this.scene.add.text(this.worldX(x), this.worldY(y), text, {
       align: 'center',
       color: '#3f2d21',
       fontFamily: 'Arial, sans-serif',
