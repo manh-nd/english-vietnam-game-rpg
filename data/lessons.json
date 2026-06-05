@@ -1,20 +1,20 @@
 [
   {
     "id": "lesson_greeting_at_viewpoint",
-    "title": "Greeting at the Viewpoint",
+    "title": "Meet May at the Viewpoint",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_may_guide",
     "level": "beginner",
-    "learning_goal": "Start a friendly conversation with a guide.",
+    "learning_goal": "Start the loop with a friendly greeting and ask for help.",
     "key_phrases": [
       "Hello, nice to meet you.",
       "My name is Linh.",
-      "Can you help me?"
+      "Can you help me today?"
     ],
     "dialogue": [
       {
         "speaker": "May",
-        "text": "Hello! Welcome to the viewpoint."
+        "text": "Hello! Welcome to the Ha Giang Loop."
       },
       {
         "speaker": "Linh",
@@ -22,334 +22,378 @@
       },
       {
         "speaker": "May",
-        "text": "Nice to meet you, Linh. Can I help you?"
+        "text": "Nice to meet you, Linh. I can help you find the first viewpoint."
       }
     ],
     "passport_stamp_id": "stamp_lesson_greeting",
-    "skill": "greetings",
-    "npc_line": "Hello! Welcome to the viewpoint.",
+    "skill": "greeting",
+    "npc_line": "Hello! Welcome to the Ha Giang Loop. Are you ready for the first viewpoint?",
     "choices": [
-      "Hello, nice to meet you.",
-      "Goodbye, see you tomorrow.",
-      "The road is broken."
+      "Hello, nice to meet you. My name is Linh.",
+      "Good night. I am going to sleep now.",
+      "My bike has a broken light."
     ],
-    "hint": "Choose the friendly phrase you say when you meet someone.",
-    "explanation_vi": "Dùng “Hello, nice to meet you” khi chào và làm quen với người mới.",
+    "hint": "May is meeting you for the first time. Choose a warm first sentence.",
+    "explanation_vi": "Câu đúng chào May, nói tên của bạn, và phù hợp khi gặp hướng dẫn viên lần đầu. Rất tự nhiên và thân thiện.",
     "reward_vocab": [
       "hello",
       "nice to meet you",
-      "help"
+      "viewpoint"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_asking_for_directions",
-    "title": "Asking for Directions",
+    "title": "Ask for the Viewpoint Road",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_may_guide",
     "level": "beginner",
-    "learning_goal": "Ask where to go and understand simple route words.",
+    "learning_goal": "Ask for a simple direction and repeat the route.",
     "key_phrases": [
-      "Where is the road?",
-      "Turn left.",
-      "Go straight."
+      "Where is the viewpoint?",
+      "Go straight.",
+      "Turn left at the blue sign."
     ],
     "dialogue": [
       {
         "speaker": "Linh",
-        "text": "Where is the road to the viewpoint?"
+        "text": "Where is the viewpoint?"
       },
       {
         "speaker": "May",
-        "text": "Go straight, then turn left near the tea shop."
+        "text": "Go straight, then turn left at the blue sign."
       },
       {
         "speaker": "Linh",
-        "text": "Thank you. I will go straight, then turn left."
+        "text": "Go straight, then turn left. Thank you."
       }
     ],
     "passport_stamp_id": "stamp_lesson_directions",
     "skill": "directions",
-    "npc_line": "Go straight, then turn left near the tea shop.",
+    "npc_line": "Go straight, then turn left at the blue sign.",
     "choices": [
-      "Go straight, then turn left.",
-      "I would like tea, please.",
-      "It is rainy today."
+      "Go straight, then turn left at the blue sign.",
+      "I would like soup and rice, please.",
+      "It costs ten minutes."
     ],
-    "hint": "Listen for route words like straight, left, and right.",
-    "explanation_vi": "Câu đúng nhắc lại chỉ dẫn đường: đi thẳng rồi rẽ trái.",
+    "hint": "Repeat the road words so May knows you understood the route.",
+    "explanation_vi": "Câu đúng nhắc lại chỉ đường: đi thẳng rồi rẽ trái ở biển màu xanh. Khi du lịch, lặp lại chỉ dẫn giúp tránh nhầm đường.",
     "reward_vocab": [
-      "road",
       "go straight",
-      "turn left"
-    ],
-    "correct_choice_index": 0
-  },
-  {
-    "id": "lesson_ordering_tea",
-    "title": "Ordering Tea",
-    "location_id": "ha_giang_loop",
-    "npc_id": "npc_lan_homestay_host",
-    "level": "beginner",
-    "learning_goal": "Order a drink politely at a homestay or cafe.",
-    "key_phrases": [
-      "May I have tea, please?",
-      "How much is it?",
-      "Thank you."
-    ],
-    "dialogue": [
-      {
-        "speaker": "Linh",
-        "text": "May I have tea, please?"
-      },
-      {
-        "speaker": "Lan",
-        "text": "Of course. One cup of tea."
-      },
-      {
-        "speaker": "Linh",
-        "text": "How much is it?"
-      }
-    ],
-    "passport_stamp_id": "stamp_lesson_tea",
-    "skill": "ordering politely",
-    "npc_line": "Of course. One cup of tea.",
-    "choices": [
-      "May I have tea, please?",
-      "Where is the road?",
-      "The wheel is loose."
-    ],
-    "hint": "Use “please” to make the request polite.",
-    "explanation_vi": "“May I have tea, please?” là cách gọi trà lịch sự.",
-    "reward_vocab": [
-      "tea",
-      "please",
-      "how much"
+      "turn left",
+      "sign"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_weather_check",
-    "title": "Checking the Weather",
+    "title": "Check the Road Safety",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_may_guide",
     "level": "beginner",
-    "learning_goal": "Ask about weather before traveling.",
+    "learning_goal": "Ask if the road is safe before riding.",
     "key_phrases": [
-      "What is the weather like?",
-      "It is rainy.",
-      "Is the road safe?"
+      "Is the road safe today?",
+      "It is foggy.",
+      "Please ride slowly."
     ],
     "dialogue": [
       {
         "speaker": "Linh",
-        "text": "What is the weather like today?"
+        "text": "Is the road safe today?"
       },
       {
         "speaker": "May",
-        "text": "It is cloudy and a little rainy."
+        "text": "It is foggy near the pass. Please ride slowly."
       },
       {
         "speaker": "Linh",
-        "text": "Is the road safe?"
+        "text": "Okay. I will ride slowly."
       }
     ],
     "passport_stamp_id": "stamp_lesson_weather",
-    "skill": "weather questions",
-    "npc_line": "It is cloudy and a little rainy.",
+    "skill": "safety",
+    "npc_line": "It is foggy near the pass. Please ride slowly.",
     "choices": [
-      "What is the weather like today?",
-      "Thank you for dinner.",
-      "Can you fix the light?"
+      "Okay. I will ride slowly.",
+      "Can I have more tea?",
+      "The wheel is loose."
     ],
-    "hint": "Ask about the weather before you ride.",
-    "explanation_vi": "Câu hỏi “What is the weather like today?” dùng để hỏi thời tiết hôm nay.",
+    "hint": "May gives safety advice. Choose the answer that accepts the advice.",
+    "explanation_vi": "May nói đường có sương mù và khuyên đi chậm. Câu đúng xác nhận bạn hiểu và sẽ đi chậm để an toàn.",
     "reward_vocab": [
-      "weather",
-      "rainy",
-      "safe"
+      "safe",
+      "foggy",
+      "ride slowly"
     ],
     "correct_choice_index": 0
   },
   {
-    "id": "lesson_homestay_introduction",
-    "title": "Homestay Introduction",
+    "id": "lesson_talking_about_plans",
+    "title": "Tell May Your Route Plan",
     "location_id": "ha_giang_loop",
-    "npc_id": "npc_lan_homestay_host",
+    "npc_id": "npc_may_guide",
     "level": "beginner",
-    "learning_goal": "Introduce yourself to a host and answer simple questions.",
+    "learning_goal": "Say a simple route plan for the next part of the loop.",
     "key_phrases": [
-      "I am from Vietnam.",
-      "I am learning English.",
-      "This place is beautiful."
+      "I will go to the village.",
+      "I plan to leave in the morning.",
+      "I will stop before dark."
     ],
     "dialogue": [
       {
-        "speaker": "Lan",
-        "text": "Welcome to my homestay."
+        "speaker": "May",
+        "text": "What is your plan after the viewpoint?"
       },
       {
         "speaker": "Linh",
-        "text": "Thank you. I am Linh, and I am learning English."
+        "text": "I will go to the village and stop before dark."
       },
       {
-        "speaker": "Lan",
-        "text": "That is wonderful. Please come in."
+        "speaker": "May",
+        "text": "Good plan. The road is easier before dark."
       }
     ],
-    "passport_stamp_id": "stamp_lesson_homestay",
-    "skill": "introductions",
-    "npc_line": "Welcome to my homestay.",
+    "passport_stamp_id": "stamp_lesson_plans",
+    "skill": "safety",
+    "npc_line": "What is your plan after the viewpoint?",
     "choices": [
-      "I am Linh, and I am learning English.",
-      "Turn left near the tea shop.",
-      "The light is broken."
+      "I will go to the village and stop before dark.",
+      "Thank you for the dinner. It was delicious.",
+      "Could you fix the brake, please?"
     ],
-    "hint": "Say your name and one simple fact about yourself.",
-    "explanation_vi": "Khi gặp chủ nhà, hãy giới thiệu tên và nói bạn đang học tiếng Anh.",
+    "hint": "Use “I will...” to talk about your next travel step.",
+    "explanation_vi": "Câu đúng dùng “I will...” để nói kế hoạch tiếp theo: đi đến bản và dừng trước khi trời tối. Đây là kế hoạch an toàn.",
     "reward_vocab": [
-      "homestay",
-      "learning",
-      "beautiful"
+      "plan",
+      "village",
+      "before dark"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_describing_bike_problem",
-    "title": "Describing a Bike Problem",
+    "title": "Tell Binh the Bike Problem",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_binh_mechanic",
     "level": "beginner",
-    "learning_goal": "Use simple words to describe a travel problem.",
+    "learning_goal": "Name a simple bike problem and ask for a check.",
     "key_phrases": [
-      "The wheel is loose.",
-      "The light is broken.",
+      "The brake feels weak.",
+      "The tire is soft.",
       "Can you check it?"
     ],
     "dialogue": [
       {
+        "speaker": "Binh",
+        "text": "Hi. What is the problem?"
+      },
+      {
         "speaker": "Linh",
-        "text": "The wheel is loose. Can you check it?"
+        "text": "The brake feels weak. Can you check it?"
       },
       {
         "speaker": "Binh",
-        "text": "Yes, I can check it now."
-      },
-      {
-        "speaker": "Linh",
-        "text": "Thank you. The light is also broken."
+        "text": "Yes. I will check the brake and tire."
       }
     ],
     "passport_stamp_id": "stamp_lesson_bike_problem",
-    "skill": "problem descriptions",
-    "npc_line": "Yes, I can check it now.",
+    "skill": "bike_repair",
+    "npc_line": "Hi. What is the problem with your bike?",
     "choices": [
-      "The wheel is loose. Can you check it?",
-      "May I have tea, please?",
-      "I visited the mountain pass."
+      "The brake feels weak. Can you check it?",
+      "Where is the mountain viewpoint?",
+      "I will eat dinner at seven."
     ],
-    "hint": "Name the bike part and describe the problem clearly.",
-    "explanation_vi": "Câu đúng nêu vấn đề xe: bánh xe bị lỏng và nhờ kiểm tra.",
+    "hint": "Binh needs the bike part and the problem, not a long story.",
+    "explanation_vi": "Câu đúng nói rõ bộ phận xe: brake (phanh) và vấn đề: feels weak (yếu). Sau đó nhờ kiểm tra rất lịch sự.",
     "reward_vocab": [
-      "wheel",
-      "loose",
+      "brake",
+      "tire",
       "check"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_polite_repair_request",
-    "title": "Polite Repair Request",
+    "title": "Ask Binh for Help",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_binh_mechanic",
     "level": "beginner",
-    "learning_goal": "Ask for help politely and confirm a price.",
+    "learning_goal": "Make a polite request when you need repair help.",
     "key_phrases": [
+      "Could you help me, please?",
       "Could you fix it, please?",
-      "How long will it take?",
-      "That is okay."
+      "Thank you for your help."
     ],
     "dialogue": [
       {
         "speaker": "Linh",
-        "text": "Could you fix it, please?"
+        "text": "Could you help me, please?"
       },
       {
         "speaker": "Binh",
-        "text": "Yes. It will take ten minutes."
+        "text": "Of course. Please wait here."
       },
       {
         "speaker": "Linh",
-        "text": "That is okay. Thank you."
+        "text": "Thank you for your help."
       }
     ],
     "passport_stamp_id": "stamp_lesson_repair_request",
-    "skill": "polite requests",
-    "npc_line": "Yes. It will take ten minutes.",
+    "skill": "bike_repair",
+    "npc_line": "I can fix it. Please wait here.",
     "choices": [
-      "Could you fix it, please?",
-      "What did you do today?",
-      "It is cloudy and rainy."
+      "Thank you. Could you fix it, please?",
+      "This place is beautiful and quiet.",
+      "Turn right at the market."
     ],
-    "hint": "Use “could you” and “please” to ask politely.",
-    "explanation_vi": "“Could you fix it, please?” là lời nhờ sửa xe lịch sự.",
+    "hint": "Use “could you” plus “please” to sound polite and calm.",
+    "explanation_vi": "“Could you fix it, please?” là cách nhờ sửa xe lịch sự. Thêm “Thank you” giúp câu nghe thân thiện hơn.",
     "reward_vocab": [
+      "could you",
       "fix",
-      "please",
-      "ten minutes"
+      "please"
     ],
     "correct_choice_index": 0
   },
   {
-    "id": "lesson_talking_about_plans",
-    "title": "Talking About Plans",
+    "id": "lesson_confirming_repair_time_cost",
+    "title": "Confirm Repair Time and Cost",
     "location_id": "ha_giang_loop",
-    "npc_id": "npc_may_guide",
+    "npc_id": "npc_binh_mechanic",
     "level": "beginner",
-    "learning_goal": "Say where you plan to go next.",
+    "learning_goal": "Confirm how long a repair takes and how much it costs.",
     "key_phrases": [
-      "I will go to the village.",
-      "I plan to leave in the morning.",
-      "I will ride slowly."
+      "How long will it take?",
+      "How much is it?",
+      "That is okay."
     ],
     "dialogue": [
       {
-        "speaker": "May",
-        "text": "What is your plan?"
+        "speaker": "Binh",
+        "text": "It will take twenty minutes and cost fifty thousand dong."
       },
       {
         "speaker": "Linh",
-        "text": "I will go to the village in the morning."
+        "text": "Okay. Twenty minutes and fifty thousand dong."
       },
       {
-        "speaker": "May",
-        "text": "Good. Please ride slowly."
+        "speaker": "Binh",
+        "text": "Yes. I will start now."
       }
     ],
-    "passport_stamp_id": "stamp_lesson_plans",
-    "skill": "travel plans",
-    "npc_line": "What is your plan?",
+    "passport_stamp_id": "stamp_lesson_repair_time_cost",
+    "skill": "bike_repair",
+    "npc_line": "It will take twenty minutes and cost fifty thousand dong.",
     "choices": [
-      "I will go to the village in the morning.",
-      "How much is the tea?",
-      "The wheel is loose."
+      "Okay. Twenty minutes and fifty thousand dong.",
+      "I need one room for tonight.",
+      "Is the road foggy today?"
     ],
-    "hint": "Use “I will” to talk about your next plan.",
-    "explanation_vi": "Dùng “I will...” để nói kế hoạch sẽ làm trong tương lai.",
+    "hint": "Repeat the time and price to confirm you understand.",
+    "explanation_vi": "Câu đúng lặp lại thời gian và giá tiền. Khi sửa xe, xác nhận như vậy giúp tránh hiểu nhầm.",
     "reward_vocab": [
-      "plan",
-      "village",
-      "morning"
+      "twenty minutes",
+      "cost",
+      "dong"
+    ],
+    "correct_choice_index": 0
+  },
+  {
+    "id": "lesson_homestay_introduction",
+    "title": "Check In with Lan",
+    "location_id": "ha_giang_loop",
+    "npc_id": "npc_lan_homestay_host",
+    "level": "beginner",
+    "learning_goal": "Check in at a homestay and introduce yourself.",
+    "key_phrases": [
+      "I have a room for tonight.",
+      "My name is Linh.",
+      "Thank you for welcoming me."
+    ],
+    "dialogue": [
+      {
+        "speaker": "Lan",
+        "text": "Welcome to my homestay. Do you have a booking?"
+      },
+      {
+        "speaker": "Linh",
+        "text": "Yes. I have a room for tonight. My name is Linh."
+      },
+      {
+        "speaker": "Lan",
+        "text": "Great. Your room is ready."
+      }
+    ],
+    "passport_stamp_id": "stamp_lesson_homestay",
+    "skill": "homestay",
+    "npc_line": "Welcome to my homestay. Do you have a booking?",
+    "choices": [
+      "Yes. I have a room for tonight. My name is Linh.",
+      "The brake feels weak. Can you check it?",
+      "Go straight, then turn left."
+    ],
+    "hint": "Lan asks about check-in. Say you have a room and give your name.",
+    "explanation_vi": "Câu đúng dùng khi nhận phòng: xác nhận bạn có phòng tối nay và nói tên. Ngắn gọn, rõ ràng, lịch sự.",
+    "reward_vocab": [
+      "homestay",
+      "booking",
+      "room"
+    ],
+    "correct_choice_index": 0
+  },
+  {
+    "id": "lesson_ordering_tea",
+    "title": "Order Dinner at the Homestay",
+    "location_id": "ha_giang_loop",
+    "npc_id": "npc_lan_homestay_host",
+    "level": "beginner",
+    "learning_goal": "Order a simple dinner politely after a long ride.",
+    "key_phrases": [
+      "May I have dinner, please?",
+      "I would like rice and vegetables.",
+      "No chili, please."
+    ],
+    "dialogue": [
+      {
+        "speaker": "Lan",
+        "text": "Dinner is at seven. What would you like?"
+      },
+      {
+        "speaker": "Linh",
+        "text": "I would like rice and vegetables, please."
+      },
+      {
+        "speaker": "Lan",
+        "text": "Sure. Would you like tea too?"
+      }
+    ],
+    "passport_stamp_id": "stamp_lesson_tea",
+    "skill": "food_ordering",
+    "npc_line": "Dinner is at seven. What would you like?",
+    "choices": [
+      "I would like rice and vegetables, please.",
+      "The road is foggy near the pass.",
+      "Twenty minutes and fifty thousand dong."
+    ],
+    "hint": "Lan asks about food. Use “I would like...” and “please.”",
+    "explanation_vi": "Câu đúng gọi món ăn đơn giản bằng “I would like... please.” Đây là cách lịch sự khi ăn ở homestay hoặc quán nhỏ.",
+    "reward_vocab": [
+      "dinner",
+      "rice",
+      "vegetables",
+      "please"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_saying_thank_you",
-    "title": "Saying Thank You",
+    "title": "Thank Lan After Dinner",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_lan_homestay_host",
     "level": "beginner",
-    "learning_goal": "Express gratitude after receiving help or food.",
+    "learning_goal": "Thank a host and give a simple compliment.",
     "key_phrases": [
       "Thank you for dinner.",
       "It was delicious.",
@@ -362,70 +406,70 @@
       },
       {
         "speaker": "Lan",
-        "text": "You are welcome."
+        "text": "You are welcome. I am happy you liked it."
       },
       {
         "speaker": "Linh",
-        "text": "You are very kind."
+        "text": "Your family is very kind."
       }
     ],
     "passport_stamp_id": "stamp_lesson_thank_you",
-    "skill": "gratitude",
-    "npc_line": "You are welcome.",
+    "skill": "homestay",
+    "npc_line": "Did you enjoy dinner?",
     "choices": [
-      "Thank you for dinner. It was delicious.",
-      "Where is the road?",
-      "Can you check the wheel?"
+      "Yes. Thank you for dinner. It was delicious.",
+      "No. Turn left at the blue sign.",
+      "The tire is soft and the brake is weak."
     ],
-    "hint": "After food or help, say thank you and add a kind detail.",
-    "explanation_vi": "Câu đúng cảm ơn bữa tối và khen món ăn ngon.",
+    "hint": "After someone cooks for you, thank them and say one nice detail.",
+    "explanation_vi": "Câu đúng cảm ơn bữa tối và khen món ăn ngon. Đây là phản hồi thân thiện, dễ dùng trong đời thật.",
     "reward_vocab": [
       "thank you",
-      "dinner",
-      "delicious"
+      "delicious",
+      "kind"
     ],
     "correct_choice_index": 0
   },
   {
     "id": "lesson_sharing_travel_story",
-    "title": "Sharing a Travel Story",
+    "title": "Ask About Breakfast Time",
     "location_id": "ha_giang_loop",
     "npc_id": "npc_lan_homestay_host",
     "level": "beginner",
-    "learning_goal": "Tell a short story about a place you visited.",
+    "learning_goal": "Ask a host about breakfast time and a local custom politely.",
     "key_phrases": [
-      "Today I visited the mountain pass.",
-      "The view was beautiful.",
-      "I learned new English words."
+      "What time is breakfast?",
+      "Should I take off my shoes?",
+      "Thank you for telling me."
     ],
     "dialogue": [
       {
         "speaker": "Lan",
-        "text": "What did you do today?"
+        "text": "Breakfast is simple here. We eat together in the morning."
       },
       {
         "speaker": "Linh",
-        "text": "Today I visited the mountain pass."
+        "text": "What time is breakfast?"
       },
       {
-        "speaker": "Linh",
-        "text": "The view was beautiful, and I learned new English words."
+        "speaker": "Lan",
+        "text": "Breakfast is at seven. Please take off your shoes inside."
       }
     ],
     "passport_stamp_id": "stamp_lesson_story",
-    "skill": "short travel stories",
-    "npc_line": "What did you do today?",
+    "skill": "homestay",
+    "npc_line": "Breakfast is simple here. We eat together in the morning.",
     "choices": [
-      "Today I visited the mountain pass.",
-      "May I have tea, please?",
-      "It will take ten minutes."
+      "What time is breakfast? Should I take off my shoes?",
+      "How much does the brake repair cost?",
+      "I will ride fast in the fog."
     ],
-    "hint": "Answer with one thing you did today.",
-    "explanation_vi": "Câu đúng kể một việc đã làm hôm nay: đã thăm đèo núi.",
+    "hint": "Ask about time and house rules in a polite way.",
+    "explanation_vi": "Câu đúng hỏi giờ ăn sáng và hỏi có nên cởi giày không. Đây là cách tôn trọng văn hóa và quy định của chủ nhà.",
     "reward_vocab": [
-      "visited",
-      "mountain pass",
-      "view"
+      "breakfast",
+      "take off shoes",
+      "inside"
     ],
     "correct_choice_index": 0
   }

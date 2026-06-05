@@ -5,8 +5,13 @@
     "region": "Ha Giang Province",
     "country": "Vietnam",
     "mvp_location": true,
-    "summary": "A mountainous motorbike route where travelers practice English for directions, safety, food, weather, and local hospitality.",
-    "biomes": ["limestone mountains", "rice terraces", "winding roads", "villages"],
+    "summary": "A focused first travel day on the Ha Giang Loop where learners greet a guide, solve a bike problem, and check in at a family homestay.",
+    "biomes": [
+      "limestone mountains",
+      "rice terraces",
+      "winding roads",
+      "villages"
+    ],
     "passport_stamp": {
       "id": "stamp_ha_giang_loop",
       "title": "Ha Giang Loop Explorer",
@@ -16,9 +21,10 @@
     "recommended_lessons": [
       "lesson_greeting_at_viewpoint",
       "lesson_asking_for_directions",
-      "lesson_ordering_tea",
       "lesson_weather_check",
-      "lesson_homestay_introduction"
+      "lesson_describing_bike_problem",
+      "lesson_homestay_introduction",
+      "lesson_ordering_tea"
     ]
   }
 ]
