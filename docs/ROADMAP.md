@@ -18,21 +18,20 @@ The MVP remains the Ha Giang Loop vertical slice: authored NPC dialogue, lessons
 - Sequential lessons per NPC.
 - Reward feedback for vocabulary, XP, and passport stamp placeholders.
 - Placeholder Ha Giang map suitable for MVP playtesting.
+- Deployment preparation documentation for a static Vite build on Vercel or Netlify.
 
 ### Next
 
-- Deploy the MVP to a safe static web host for external playtesting.
-- Playtest with 3–5 Vietnamese A1/A2 English learners.
-- Fix playtest issues that block clarity, lesson flow, or basic browser usability.
-- Polish mobile/browser controls and layout after the first feedback round.
-- Add save/load after the session loop is proven useful.
-- Prototype the next location only after the Ha Giang Loop is playable, understandable, and fun.
+1. Deploy the MVP to Vercel or Netlify.
+2. Run 3–5 external playtests with Vietnamese A1/A2 English learners.
+3. Prioritize fixes from playtest notes, especially clarity, lesson flow, and browser usability issues.
+4. Then consider mobile polish, save/load, and the next location only after the Ha Giang Loop is playable, understandable, and fun.
 
 ## Deployment and Playtesting Readiness
 
 - Use `npm run build` to create the static `dist/` output.
 - Use `npm run preview` to check the production build locally.
-- Follow `docs/DEPLOYMENT.md` for Vercel, Netlify, and GitHub Pages notes.
+- Follow `docs/DEPLOYMENT.md` for the recommended Vercel/Netlify static deployment path.
 - Follow `docs/PLAYTEST.md` for manual tester instructions, tasks, feedback questions, and bug reports.
 
 ## Longer-Term Goals

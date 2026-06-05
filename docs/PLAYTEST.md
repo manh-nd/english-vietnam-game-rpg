@@ -10,14 +10,20 @@ A good first tester is:
 - Comfortable trying a browser game for 10–15 minutes.
 - Willing to say where the English, UI, or game goal feels confusing.
 
+## Playtest URL
+
+- TBD after deployment.
+
 ## Test Instructions
 
-1. Open the shared web link, or run a local production preview.
-2. Move with **WASD** or the **arrow keys**.
-3. Talk to nearby NPCs by clicking them or pressing **E**.
-4. Read the short dialogue.
-5. Answer the English lesson choices.
-6. Watch for quest, vocabulary, XP, and passport stamp feedback.
+1. Open the playtest URL.
+2. Use desktop Chrome or Edge first if possible.
+3. If testing on mobile, record the device and browser in the notes.
+4. Move with **WASD** or the **arrow keys**.
+5. Talk to nearby NPCs by clicking them or pressing **E**.
+6. Read the short dialogue.
+7. Answer the English lesson choices.
+8. Watch for quest, vocabulary, XP, and passport stamp feedback.
 
 ## Test Tasks
 

@@ -2,6 +2,26 @@
 
 These notes prepare the Phaser web MVP for external playtesting as a static Vite build. This project does **not** deploy automatically from this PR.
 
+## Recommended First Deployment Target
+
+Use **Vercel or Netlify** for the first external playtest deployment. Both can build and serve this project as a static Vite site without changing the Vite base path.
+
+Recommended production settings:
+
+- Install command: `npm install`.
+- Build command: `npm run build`.
+- Output directory: `dist`.
+- Node version: use the platform default unless the build fails; if you need to pin one, use **Node v24 LTS**.
+
+Prefer documenting these settings in the hosting dashboard over adding host config files until the deployment needs them.
+
+## Verified Static Build Assumptions
+
+- The web MVP is a browser-first Vite app and can be deployed as a static production build.
+- `npm run build` runs TypeScript checking and writes the static site to `dist/`.
+- `npm run preview` serves the built `dist/` output for local production verification.
+- The Vite base path should remain unchanged for normal Vercel or Netlify deployments on a platform URL or custom domain.
+
 ## Local Production Preview
 
 Build the production bundle:
@@ -36,28 +56,31 @@ These are already ignored by `.gitignore`.
 
 ## Vercel Notes
 
-Vercel can deploy the Vite app with the default static build settings:
+Vercel is a recommended first deployment target for this MVP. Use the default Vite/static site flow:
 
 - Framework preset: `Vite` if detected.
-- Install command: `npm install` or the Vercel default.
+- Install command: `npm install`.
 - Build command: `npm run build`.
 - Output directory: `dist`.
+- Node version: platform default; if a version must be specified, use Node v24 LTS.
 
-No hardcoded Vite `base` path is needed for a normal Vercel project domain or custom domain.
+No `vercel.json` is required right now because these settings can be configured in the Vercel project dashboard. No hardcoded Vite `base` path is needed for a normal Vercel project domain or custom domain.
 
 ## Netlify Notes
 
-Netlify can deploy the Vite app as a static site:
+Netlify is also a recommended first deployment target for this MVP. Use the default static site flow:
 
+- Install command: `npm install`.
 - Build command: `npm run build`.
 - Publish directory: `dist`.
+- Node version: platform default; if a version must be specified, use Node v24 LTS.
 - Local preview before pushing: `npm run build` then `npm run preview`.
 
-No hardcoded Vite `base` path is needed for the default Netlify site URL or a custom domain.
+No `netlify.toml` is required right now because these settings can be configured in the Netlify site dashboard. No hardcoded Vite `base` path is needed for the default Netlify site URL or a custom domain.
 
-## GitHub Pages Notes
+## Non-default GitHub Pages Note
 
-GitHub Pages can host the static `dist/` output, but repository pages usually need a configured base path when the site is served from a subpath such as:
+GitHub Pages is not the recommended first deployment target for this MVP unless it is explicitly configured. It can host the static `dist/` output, but repository pages usually need a configured base path when the site is served from a subpath such as:
 
 ```txt
 https://<user>.github.io/<repo>/

@@ -51,6 +51,12 @@ python tools/validate_content.py
 
 Run this after editing files in `data/`.
 
+## Playtest / Deployment
+
+- Production deployment docs: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+- Playtest guide: [`docs/PLAYTEST.md`](docs/PLAYTEST.md).
+- The current MVP is ready for a first external playtest after deployment to Vercel or Netlify.
+
 ## Current Gameplay
 
 In the current Ha Giang web prototype, players can:
