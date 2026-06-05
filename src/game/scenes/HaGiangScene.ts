@@ -385,7 +385,15 @@ export class HaGiangScene extends Phaser.Scene {
 
     const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
     const npc = contentDatabase?.getNpc(nearestNpc.npcId);
-    this.interactionPromptText.setText(`Press E to talk to ${npc?.name ?? 'NPC'}`);
+    const progress = this.npcInteractionController?.getNpcLessonProgress(nearestNpc.npcId);
+    const lessonProgressText = progress
+      ? `${npc?.name ?? 'NPC'} lessons: ${progress.completedLessonIds.length}/${progress.availableLessonIds.length}`
+      : undefined;
+
+    this.interactionPromptText.setText([
+      `Press E to talk to ${npc?.name ?? 'NPC'}`,
+      ...(lessonProgressText ? [lessonProgressText] : []),
+    ]);
     this.interactionPromptText.setVisible(true);
   }
 
@@ -398,6 +406,7 @@ export class HaGiangScene extends Phaser.Scene {
       ok: 'Interaction is ready.',
       npc_not_found: 'NPC is not available.',
       npc_missing_intro_lesson: 'This NPC does not have a lesson yet.',
+      npc_lessons_complete: 'You have finished this NPC’s lessons for now.',
       lesson_not_found: 'Lesson content is missing.',
       wrong_location: 'This lesson belongs to another location.',
     };
