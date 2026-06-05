@@ -1,0 +1,98 @@
+[
+  {
+    "id": "quest_find_the_viewpoint",
+    "title": "Find the Mountain Viewpoint",
+    "location_id": "ha_giang_loop",
+    "giver_npc_id": "npc_may_guide",
+    "summary": "Ask May for directions and follow the road to the viewpoint.",
+    "objectives": [
+      "Complete the greeting lesson with May.",
+      "Practice asking for directions.",
+      "Reach the viewpoint marker."
+    ],
+    "required_lesson_ids": ["lesson_greeting_at_viewpoint", "lesson_asking_for_directions"],
+    "rewards": {
+      "passport_stamps": ["stamp_viewpoint_visitor"],
+      "xp": 50
+    }
+  },
+  {
+    "id": "quest_repair_vocabulary",
+    "title": "Words for a Wobbly Wheel",
+    "location_id": "ha_giang_loop",
+    "giver_npc_id": "npc_binh_mechanic",
+    "summary": "Help Binh understand a traveler's simple motorbike problem in English.",
+    "objectives": [
+      "Learn words for common bike issues.",
+      "Make a polite repair request.",
+      "Confirm the repair price."
+    ],
+    "required_lesson_ids": ["lesson_describing_bike_problem", "lesson_polite_repair_request"],
+    "rewards": {
+      "passport_stamps": ["stamp_repair_helper"],
+      "xp": 60
+    }
+  },
+  {
+    "id": "quest_safe_route_plan",
+    "title": "Plan a Safe Route",
+    "location_id": "ha_giang_loop",
+    "giver_npc_id": "npc_may_guide",
+    "summary": "Review weather and route advice before continuing around the loop.",
+    "objectives": [
+      "Ask about today's weather.",
+      "Choose safe travel phrases.",
+      "Tell May your route plan."
+    ],
+    "required_lesson_ids": ["lesson_weather_check", "lesson_talking_about_plans"],
+    "rewards": {
+      "passport_stamps": ["stamp_safe_traveler"],
+      "xp": 75
+    }
+  },
+  {
+    "id": "quest_homestay_dinner",
+    "title": "Homestay Dinner Conversation",
+    "location_id": "ha_giang_loop",
+    "giver_npc_id": "npc_lan_homestay_host",
+    "summary": "Join Lan's family dinner and practice friendly English conversation.",
+    "objectives": [
+      "Introduce yourself at the homestay.",
+      "Order tea and food politely.",
+      "Say thank you after dinner."
+    ],
+    "required_lesson_ids": ["lesson_homestay_introduction", "lesson_ordering_tea", "lesson_saying_thank_you"],
+    "rewards": {
+      "passport_stamps": ["stamp_homestay_guest"],
+      "xp": 90
+    }
+  },
+  {
+    "id": "quest_passport_stamp",
+    "title": "First English Passport Page",
+    "location_id": "ha_giang_loop",
+    "giver_npc_id": "npc_lan_homestay_host",
+    "summary": "Review your Ha Giang conversations and earn the location completion stamp.",
+    "objectives": [
+      "Complete all Ha Giang Loop MVP lessons.",
+      "Review your favorite phrases.",
+      "Collect the Ha Giang Loop Explorer stamp."
+    ],
+    "required_lesson_ids": [
+      "lesson_greeting_at_viewpoint",
+      "lesson_asking_for_directions",
+      "lesson_ordering_tea",
+      "lesson_weather_check",
+      "lesson_homestay_introduction",
+      "lesson_describing_bike_problem",
+      "lesson_polite_repair_request",
+      "lesson_talking_about_plans",
+      "lesson_saying_thank_you",
+      "lesson_sharing_travel_story"
+    ],
+    "rewards": {
+      "passport_stamps": ["stamp_ha_giang_loop"],
+      "xp": 150
+    }
+  }
+]

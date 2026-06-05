@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://mainenglishvnrpg"]
+
+[ext_resource type="PackedScene" uid="uid://hagiangloopscene" path="res://scenes/world/HaGiangLoop.tscn" id="1_hg"]
+[ext_resource type="PackedScene" uid="uid://dialoguepanelscene" path="res://scenes/ui/DialoguePanel.tscn" id="2_dp"]
+
+[node name="Main" type="Node"]
+
+[node name="World" parent="." instance=ExtResource("1_hg")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialoguePanel" parent="CanvasLayer" instance=ExtResource("2_dp")]
+visible = false
