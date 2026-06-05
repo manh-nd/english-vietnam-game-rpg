@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://main_demo_entry_scene"]
+
+[ext_resource type="PackedScene" uid="uid://ha_giang_mvp_scene" path="res://scenes/locations/ha_giang_mvp.tscn" id="1_ha_giang_mvp"]
+
+[node name="Main" type="Node"]
+
+[node name="HaGiangMVP" parent="." instance=ExtResource("1_ha_giang_mvp")]
