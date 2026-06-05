@@ -1,21 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://playerlinhscene"]
+[gd_scene load_steps=2 format=3 uid="uid://playerlinhscene"]
 
-[ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_pc"]
+[ext_resource type="PackedScene" uid="uid://playercontrollerscene" path="res://scenes/player/player.tscn" id="1_player"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(24, 28)
-
-[node name="Player" type="CharacterBody2D"]
-script = ExtResource("1_pc")
-
-[node name="Sprite" type="ColorRect" parent="."]
-offsets_preset = 8
-offset_left = -12.0
-offset_top = -16.0
-offset_right = 12.0
-offset_bottom = 12.0
-color = Color(0.176471, 0.490196, 0.827451, 1)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -2)
-shape = SubResource("RectangleShape2D_player")
+[node name="Player" instance=ExtResource("1_player")]
