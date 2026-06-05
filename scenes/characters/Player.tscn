@@ -1,5 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://playerlinhscene"]
-
-[ext_resource type="PackedScene" uid="uid://playercontrollerscene" path="res://scenes/player/player.tscn" id="1_player"]
-
-[node name="Player" instance=ExtResource("1_player")]

@@ -17,7 +17,6 @@
       "title": "Ha Giang Loop Explorer",
       "description": "Awarded for completing the first Ha Giang Loop quest chain."
     },
-    "entry_scene": "res://scenes/world/HaGiangLoop.tscn",
     "recommended_lessons": [
       "lesson_greeting_at_viewpoint",
       "lesson_asking_for_directions",

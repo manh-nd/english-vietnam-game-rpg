@@ -17,7 +17,7 @@ The current design priority is to make the **authored dialogue and learning loop
 
 The active implementation target is a **pure web game using Vite + TypeScript + Phaser**.
 
-Primary web runtime work should happen under `src/` and should use standard browser-compatible TypeScript. New gameplay systems should be implemented in TypeScript, not in Godot/GDScript, unless the user explicitly requests otherwise.
+Primary web runtime work should happen under `src/` and should use standard browser-compatible TypeScript. New gameplay systems should be implemented in TypeScript.
 
 The near-term MVP remains focused on making the **Ha Giang Loop** playable as the first vertical slice.
 
@@ -35,22 +35,24 @@ Do **not** expand the game horizontally until the first loop is fun. In particul
 
 ## 3. Legacy Godot Status
 
-Godot files remain in the repository temporarily as **legacy/reference material during migration**.
+Godot migration reference files have been removed from the repository. The active runtime is now fully **web-first TypeScript + Phaser**.
 
-Legacy Godot material includes:
+Removed Godot runtime/editor material includes:
 
 - `project.godot`
-- `scenes/**/*.tscn`
-- `scripts/**/*.gd`
-- Godot-oriented assets, exports, and settings
+- `export_presets.cfg`
+- `scenes/`
+- `scripts/`
+- `.godot/`
+- `*.import` and other Godot-only asset import metadata
 
-Rules for Godot files during migration:
+Historical Godot implementation details can be found in earlier git history if needed.
 
-- Do **not** delete Godot files unless explicitly requested.
+Rules after cleanup:
+
 - Do **not** add new GDScript or Godot gameplay systems unless explicitly requested.
-- Do **not** treat Godot as the primary runtime for new feature work.
-- Existing Godot scenes and scripts may be referenced for behavior, layout, and design intent while porting features to TypeScript.
-- Documentation may describe Godot files as legacy/reference material, but new implementation guidance should point to the web stack.
+- Do **not** restore Godot runtime/editor files for normal MVP work.
+- New implementation guidance should point to the web stack.
 
 ## 4. Repo Structure
 
@@ -70,7 +72,6 @@ Expected repository layout during migration:
 - `tools/validate_content.py` — content validation tool for authored JSON references and schemas.
 - `docs/` — roadmap, migration notes, and design documentation.
 - `assets/` — art, icons, temporary placeholder assets, and future production assets.
-- `project.godot`, `scenes/`, `scripts/` — legacy Godot runtime material retained for reference during migration.
 
 When adding new files, keep this structure simple and avoid premature framework abstractions.
 
@@ -185,7 +186,7 @@ Codex and human contributors should complete this checklist before submitting fu
 
 - [ ] The PR is small, focused, and describes one coherent change.
 - [ ] New feature work targets the web TypeScript + Phaser stack under `src/`.
-- [ ] Godot files remain in the repo as legacy/reference material unless deletion was explicitly requested.
+- [ ] Godot runtime/editor files were not restored unless explicitly requested.
 - [ ] No new GDScript/Godot systems were added unless explicitly requested.
 - [ ] No gameplay code hardcodes lesson, quest, NPC, dialogue, or location content.
 - [ ] All learning content added or changed lives in `data/*.json`.
