@@ -9,20 +9,25 @@ import type { QuestManager, QuestUpdate } from '../systems/QuestManager';
 import type { NpcContent, QuestRewardsContent } from '../types/content';
 import { DialogueBox } from '../ui/DialogueBox';
 import { RewardToast } from '../ui/RewardToast';
+import { HaGiangMap, type HaGiangMapLayout } from '../world/HaGiangMap';
 
 export class HaGiangScene extends Phaser.Scene {
   public static readonly key = 'HaGiangScene';
 
   private static readonly haGiangLocationId = 'ha_giang_loop';
+  private static readonly debugMode = false;
   private static readonly npcPlacements: Readonly<Record<string, Phaser.Math.Vector2>> = {
-    npc_may_guide: new Phaser.Math.Vector2(280, 220),
-    npc_binh_mechanic: new Phaser.Math.Vector2(520, 260),
-    npc_lan_homestay_host: new Phaser.Math.Vector2(430, 430),
+    npc_may_guide: new Phaser.Math.Vector2(252, 214),
+    npc_binh_mechanic: new Phaser.Math.Vector2(536, 250),
+    npc_lan_homestay_host: new Phaser.Math.Vector2(452, 438),
   };
-  private static readonly player_speed = 220;
+  private static readonly playerSpeed = 220;
+  private static readonly playerWidth = 34;
+  private static readonly playerHeight = 42;
   private static readonly interactionDistance = 82;
 
-  private player?: Phaser.GameObjects.Rectangle;
+  private player?: Phaser.GameObjects.Container;
+  private mapLayout?: HaGiangMapLayout;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
   private wasd?: Record<'up' | 'down' | 'left' | 'right', Phaser.Input.Keyboard.Key>;
   private interactKey?: Phaser.Input.Keyboard.Key;
@@ -48,25 +53,27 @@ export class HaGiangScene extends Phaser.Scene {
   public create(): void {
     this.cameras.main.setBackgroundColor('#3f8f4d');
 
-    this.add.text(24, 24, 'English Vietnam RPG - Web Prototype', {
+    this.mapLayout = new HaGiangMap(this).draw();
+
+    this.add.rectangle(252, 37, 466, 58, 0x1f3523, 0.38).setDepth(850);
+    this.add.text(24, 24, 'English Vietnam RPG - Ha Giang Loop', {
       color: '#ffffff',
       fontFamily: 'Arial, sans-serif',
       fontSize: '24px',
       fontStyle: 'bold',
-    });
+    }).setDepth(900);
 
     this.add.text(24, 60, 'Move with WASD or arrow keys. Click an NPC, or stand nearby and press E.', {
       color: '#eef7ee',
       fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
-    });
+    }).setDepth(900);
 
     this.createContentDebugText();
     this.createInteractionController();
     this.initializeQuestProgression();
 
-    this.player = this.add.rectangle(400, 300, 34, 42, 0x2f5cff);
-    this.player.setStrokeStyle(2, 0xffffff, 0.9);
+    this.createPlayer();
 
     this.createAuthoredNpcs();
     this.createInteractionPrompt();
@@ -122,10 +129,97 @@ export class HaGiangScene extends Phaser.Scene {
     }
 
     if (direction.lengthSq() > 0) {
-      direction.normalize().scale(HaGiangScene.player_speed * (delta / 1000));
-      this.player.x = Phaser.Math.Clamp(direction.x + this.player.x, 16, this.scale.width - 16);
-      this.player.y = Phaser.Math.Clamp(direction.y + this.player.y, 20, this.scale.height - 20);
+      direction.normalize().scale(HaGiangScene.playerSpeed * (delta / 1000));
+      this.movePlayer(direction.x, direction.y);
     }
+  }
+
+  private createPlayer(): void {
+    const player = this.add.container(360, 340);
+    const shadow = this.add.ellipse(0, 18, 38, 14, 0x1f3523, 0.32);
+    const body = this.add.rectangle(0, 0, HaGiangScene.playerWidth, HaGiangScene.playerHeight, 0x2f5cff);
+    body.setStrokeStyle(3, 0xffffff, 0.94);
+    const head = this.add.circle(0, -16, 12, 0xffd59e, 1);
+    head.setStrokeStyle(2, 0x1b2d52, 0.75);
+    const label = this.add.text(0, -46, 'You', {
+      align: 'center',
+      color: '#ffffff',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      fontStyle: 'bold',
+      stroke: '#16315d',
+      strokeThickness: 4,
+    });
+    label.setOrigin(0.5, 0.5);
+
+    player.add([shadow, body, head, label]);
+    player.setDepth(40);
+    this.player = player;
+  }
+
+  private movePlayer(deltaX: number, deltaY: number): void {
+    if (!this.player) {
+      return;
+    }
+
+    const targetX = this.getClampedPlayerX(this.player.x + deltaX);
+    const targetY = this.getClampedPlayerY(this.player.y + deltaY);
+
+    if (this.canPlayerStandAt(targetX, targetY)) {
+      this.player.setPosition(targetX, targetY);
+      return;
+    }
+
+    if (this.canPlayerStandAt(targetX, this.player.y)) {
+      this.player.x = targetX;
+    }
+
+    if (this.canPlayerStandAt(this.player.x, targetY)) {
+      this.player.y = targetY;
+    }
+  }
+
+  private getClampedPlayerX(x: number): number {
+    const playableBounds = this.mapLayout?.playableBounds;
+
+    if (!playableBounds) {
+      return Phaser.Math.Clamp(x, HaGiangScene.playerWidth / 2, this.scale.width - HaGiangScene.playerWidth / 2);
+    }
+
+    return Phaser.Math.Clamp(
+      x,
+      playableBounds.left + HaGiangScene.playerWidth / 2,
+      playableBounds.right - HaGiangScene.playerWidth / 2,
+    );
+  }
+
+  private getClampedPlayerY(y: number): number {
+    const playableBounds = this.mapLayout?.playableBounds;
+
+    if (!playableBounds) {
+      return Phaser.Math.Clamp(y, HaGiangScene.playerHeight / 2, this.scale.height - HaGiangScene.playerHeight / 2);
+    }
+
+    return Phaser.Math.Clamp(
+      y,
+      playableBounds.top + HaGiangScene.playerHeight / 2,
+      playableBounds.bottom - HaGiangScene.playerHeight / 2,
+    );
+  }
+
+  private canPlayerStandAt(x: number, y: number): boolean {
+    const playerBounds = new Phaser.Geom.Rectangle(
+      x - HaGiangScene.playerWidth / 2,
+      y - HaGiangScene.playerHeight / 2,
+      HaGiangScene.playerWidth,
+      HaGiangScene.playerHeight,
+    );
+
+    return !(
+      this.mapLayout?.obstacles.some((obstacle) =>
+        Phaser.Geom.Intersects.RectangleToRectangle(playerBounds, obstacle),
+      ) ?? false
+    );
   }
 
   private createContentDebugText(): void {
@@ -133,22 +227,35 @@ export class HaGiangScene extends Phaser.Scene {
     const lessonManager = this.registry.get('lessonManager') as LessonManager | undefined;
 
     if (!contentDatabase || !lessonManager) {
-      this.add.text(24, 92, 'Content systems are not available yet.', {
-        color: '#ffe8a3',
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
-      });
+      this.add
+        .text(24, 92, 'Content systems are not available yet.', {
+          color: '#ffe8a3',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '14px',
+        })
+        .setDepth(900);
+      return;
+    }
+
+    if (!HaGiangScene.debugMode) {
       return;
     }
 
     const lessons = contentDatabase.getLessons();
 
-    this.add.text(24, 92, `Content: ${contentDatabase.getLocations().length} locations · ${contentDatabase.getNpcs().length} NPCs · ${lessons.length} lessons`, {
-      color: '#eef7ee',
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
-      lineSpacing: 4,
-    });
+    this.add
+      .text(
+        24,
+        92,
+        `Content: ${contentDatabase.getLocations().length} locations · ${contentDatabase.getNpcs().length} NPCs · ${lessons.length} lessons`,
+        {
+          color: '#d9ead8',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '12px',
+          lineSpacing: 4,
+        },
+      )
+      .setDepth(900);
   }
 
   private createInteractionController(): void {
@@ -166,11 +273,13 @@ export class HaGiangScene extends Phaser.Scene {
     const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
 
     if (!contentDatabase) {
-      this.add.text(24, 146, 'Warning: ContentDatabase unavailable; NPCs were not rendered.', {
-        color: '#ffe8a3',
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
-      });
+      this.add
+        .text(24, 146, 'Warning: ContentDatabase unavailable; NPCs were not rendered.', {
+          color: '#ffe8a3',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '14px',
+        })
+        .setDepth(900);
       return;
     }
 
@@ -195,21 +304,26 @@ export class HaGiangScene extends Phaser.Scene {
       npcSprite.on(NpcSprite.selectedEvent, (npcId: string) => {
         this.startNpcInteraction(npcId);
       });
+      npcSprite.setDepth(35);
       this.npcSprites.push(npcSprite);
       renderedNpcCount += 1;
     });
 
-    const debugLines = [`NPCs: ${renderedNpcCount}/${haGiangNpcs.length} ready.`];
-    if (missingPlacementIds.length > 0) {
-      debugLines.push(`Missing NPC placements: ${missingPlacementIds.join(', ')}.`);
-    }
+    if (HaGiangScene.debugMode || missingPlacementIds.length > 0) {
+      const debugLines = [`NPCs: ${renderedNpcCount}/${haGiangNpcs.length} ready.`];
+      if (missingPlacementIds.length > 0) {
+        debugLines.push(`Missing NPC placements: ${missingPlacementIds.join(', ')}.`);
+      }
 
-    this.add.text(24, 146, debugLines, {
-      color: missingPlacementIds.length > 0 ? '#ffe8a3' : '#eef7ee',
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
-      lineSpacing: 4,
-    });
+      this.add
+        .text(24, 146, debugLines, {
+          color: missingPlacementIds.length > 0 ? '#ffe8a3' : '#d9ead8',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '12px',
+          lineSpacing: 4,
+        })
+        .setDepth(900);
+    }
   }
 
   private initializeQuestProgression(): void {
