@@ -6,6 +6,7 @@ import npcsUrl from '../../../data/npcs.json?url';
 import questsUrl from '../../../data/quests.json?url';
 import { ContentDatabase } from '../systems/ContentDatabase';
 import { LessonManager } from '../systems/LessonManager';
+import { QuestManager } from '../systems/QuestManager';
 import type { AuthoredContent } from '../types/content';
 
 export class BootScene extends Phaser.Scene {
@@ -32,10 +33,12 @@ export class BootScene extends Phaser.Scene {
 
     const contentDatabase = new ContentDatabase(content);
     const lessonManager = new LessonManager(contentDatabase);
+    const questManager = new QuestManager(contentDatabase);
 
     this.registry.set('content', content);
     this.registry.set('contentDatabase', contentDatabase);
     this.registry.set('lessonManager', lessonManager);
+    this.registry.set('questManager', questManager);
     this.scene.start('HaGiangScene');
   }
 }
