@@ -7,7 +7,7 @@ A web-first TypeScript + Phaser prototype for a top-down English-learning RPG se
 - **Active runtime:** Vite + TypeScript + Phaser web prototype.
 - **Current vertical slice:** Ha Giang Loop MVP for browser playtesting.
 - **Content model:** authored JSON in `data/*.json` drives locations, NPCs, quests, and lessons.
-- **Legacy material:** Godot files remain in the repository only as migration/reference material and are not the primary implementation target.
+- **Legacy material:** Godot migration reference files have been removed; historical Godot implementation details can be found in earlier git history if needed.
 
 ## Quick Start
 
@@ -89,5 +89,5 @@ python tools/validate_content.py
 
 - New MVP feature work should target `src/` in TypeScript.
 - Authored learning/game content belongs in `data/*.json`.
-- Godot files should not be modified for web MVP work unless specifically requested.
+- The active runtime is fully web-first TypeScript + Phaser.
 - Deployment preparation is static-web focused; this repository does not deploy automatically by default.

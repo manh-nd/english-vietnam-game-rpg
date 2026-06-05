@@ -2,7 +2,7 @@
 
 ## Current Direction
 
-The project is a **web-first Vite + TypeScript + Phaser** prototype. Existing Godot files remain in the repository temporarily as legacy/reference material during migration, but new feature work should target the web stack under `src/`.
+The project is a **web-first Vite + TypeScript + Phaser** prototype. Godot migration reference files have been removed, and new feature work should target the web stack under `src/`. Historical Godot implementation details can be found in earlier git history if needed.
 
 The MVP remains the Ha Giang Loop vertical slice: authored NPC dialogue, lessons, quests, and progression driven by `data/*.json`.
 
@@ -19,6 +19,7 @@ The MVP remains the Ha Giang Loop vertical slice: authored NPC dialogue, lessons
 - Reward feedback for vocabulary, XP, and passport stamp placeholders.
 - Placeholder Ha Giang map suitable for MVP playtesting.
 - Deployment preparation documentation for a static Vite build on Vercel or Netlify.
+- Godot runtime/editor files removed after migration to the web-first Phaser runtime.
 
 ### Next
 

@@ -2,16 +2,17 @@
 
 ## Current Direction
 
-The project is moving toward a pure web TypeScript + Phaser architecture so the MVP can be developed, tested, and shipped directly through standard browser tooling. Phaser keeps the runtime lightweight, uses familiar web deployment paths, and makes it easier to iterate on the authored English-learning loop without depending on Godot web export settings during this prototype phase.
+The project now uses a pure web TypeScript + Phaser architecture so the MVP can be developed, tested, and shipped directly through standard browser tooling. Phaser keeps the runtime lightweight, uses familiar web deployment paths, and makes it easier to iterate on the authored English-learning loop.
 
-New feature work should target the **web stack under `src/`**, not the Godot runtime.
+New feature work should target the **web stack under `src/`**.
 
 ## Current Status
 
 - Phaser foundation is in place.
 - Vite and TypeScript are the active browser-first development toolchain.
-- Godot runtime files are retained temporarily as legacy/reference material during migration.
-- Existing Godot project files, scenes, scripts, and exports have not been deleted.
+- Godot migration reference files have been removed.
+- The active runtime is fully web-first TypeScript + Phaser.
+- Historical Godot implementation details can be found in earlier git history if needed.
 - `data/*.json` remains the source of truth for authored locations, NPCs, quests, and lessons.
 - `tools/validate_content.py` remains the validation pipeline for authored content references and schemas.
 - `ContentDatabase` and `LessonManager` provide typed web access to loaded authored content and lesson answer checking.
@@ -23,7 +24,7 @@ New feature work should target the **web stack under `src/`**, not the Godot run
 - Authored content in `data/*.json`.
 - Content validation through `tools/validate_content.py`.
 - Existing documentation under `docs/*.md` for design and content context.
-- Existing Godot project files, scenes, scripts, and exports as temporary reference material.
+- Web-first Phaser implementation under `src/`.
 
 ## What Is Still Out of Scope
 
@@ -82,6 +83,6 @@ python tools/validate_content.py
 ## Implementation Guidance
 
 - New gameplay systems should be written in TypeScript under `src/`.
-- Godot files should remain available as reference material but should not receive new systems unless explicitly requested.
+- Do not restore Godot runtime/editor files for normal MVP work.
 - Keep authored content in `data/*.json`; do not hardcode lesson, NPC, quest, or dialogue content in TypeScript systems.
 - Keep PRs small and focused around one migration step at a time.
