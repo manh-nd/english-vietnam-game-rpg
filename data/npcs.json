@@ -6,9 +6,9 @@
     "location_id": "ha_giang_loop",
     "personality": "patient, encouraging, practical",
     "teaches": [
+      "greeting",
       "directions",
-      "safety phrases",
-      "travel plans"
+      "safety"
     ],
     "intro_lesson_id": "lesson_greeting_at_viewpoint",
     "quest_ids": [
@@ -24,9 +24,9 @@
     "location_id": "ha_giang_loop",
     "personality": "direct, helpful, good-humored",
     "teaches": [
-      "problem descriptions",
-      "polite requests",
-      "numbers"
+      "bike problem words",
+      "polite help requests",
+      "repair time and cost"
     ],
     "intro_lesson_id": "lesson_describing_bike_problem",
     "quest_ids": [
@@ -41,9 +41,9 @@
     "location_id": "ha_giang_loop",
     "personality": "warm, curious, welcoming",
     "teaches": [
-      "introductions",
+      "homestay check-in",
       "food ordering",
-      "gratitude"
+      "local customs"
     ],
     "intro_lesson_id": "lesson_homestay_introduction",
     "quest_ids": [
