@@ -8,13 +8,15 @@ New feature work should target the **web stack under `src/`**, not the Godot run
 
 ## Current Status
 
-- Phaser foundation added.
+- Phaser foundation is in place.
 - Vite and TypeScript are the active browser-first development toolchain.
-- Godot runtime retained temporarily as legacy/reference material during migration.
+- Godot runtime files are retained temporarily as legacy/reference material during migration.
 - Existing Godot project files, scenes, scripts, and exports have not been deleted.
 - `data/*.json` remains the source of truth for authored locations, NPCs, quests, and lessons.
 - `tools/validate_content.py` remains the validation pipeline for authored content references and schemas.
-- `ContentDatabase` and `LessonManager` now provide typed web access to loaded authored content and lesson answer checking.
+- `ContentDatabase` and `LessonManager` provide typed web access to loaded authored content and lesson answer checking.
+- NPC placeholders render from authored content in the Ha Giang scene.
+- DialogueBox, QuestManager, sequential NPC lessons, quest HUD feedback, reward toasts, and passport stamp placeholders are available for the Ha Giang MVP loop.
 
 ## What is Preserved During Migration
 
@@ -23,12 +25,14 @@ New feature work should target the **web stack under `src/`**, not the Godot run
 - Existing documentation under `docs/*.md` for design and content context.
 - Existing Godot project files, scenes, scripts, and exports as temporary reference material.
 
-## What is Not Migrated Yet
+## What Is Still Out of Scope
 
-- Full dialogue UI and lesson prompt interactions are not implemented in Phaser yet.
-- Data-driven NPC rendering from `data/npcs.json` is not complete yet.
-- Quest progression, passport stamps, and persistent game state are not migrated yet.
-- Final art, production maps, deployment configuration, AI APIs, and online services are intentionally out of scope for this foundation step.
+- Final art and production maps.
+- Save/load and persistent game state.
+- Mobile polish and accessibility polish.
+- Analytics.
+- AI APIs or online services.
+- New locations beyond the Ha Giang Loop until the first loop is playtested and fun.
 
 ## How to Run the Web Prototype Locally
 
@@ -56,17 +60,24 @@ Build the static web prototype:
 npm run build
 ```
 
+Preview the production build locally:
+
+```sh
+npm run preview
+```
+
 Validate authored content:
 
 ```sh
 python tools/validate_content.py
 ```
 
-## Next Migration Steps
+## Deployment and Playtest Preparation
 
-1. Render NPCs from `data/npcs.json`.
-2. Build `src/game/ui/DialogueBox.ts` in the web UI.
-3. Reconnect quest progression.
+- Deployment notes live in `docs/DEPLOYMENT.md`.
+- Manual playtest instructions live in `docs/PLAYTEST.md`.
+- The generated static build output is `dist/` and should not be committed.
+- Vite should keep the default base path unless a deployment target, such as GitHub Pages repository hosting, serves the app from a subpath.
 
 ## Implementation Guidance
 
