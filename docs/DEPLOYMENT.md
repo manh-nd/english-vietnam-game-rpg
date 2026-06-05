@@ -11,7 +11,7 @@ Recommended production settings:
 - Install command: `npm install`.
 - Build command: `npm run build`.
 - Output directory: `dist`.
-- Node version: use the platform default unless the build fails; if you need to pin one, use **Node 20+**.
+- Node version: use the platform default unless the build fails; if you need to pin one, use **Node v24 LTS**.
 
 Prefer documenting these settings in the hosting dashboard over adding host config files until the deployment needs them.
 
@@ -62,7 +62,7 @@ Vercel is a recommended first deployment target for this MVP. Use the default Vi
 - Install command: `npm install`.
 - Build command: `npm run build`.
 - Output directory: `dist`.
-- Node version: platform default; if a version must be specified, use Node 20+.
+- Node version: platform default; if a version must be specified, use Node v24 LTS.
 
 No `vercel.json` is required right now because these settings can be configured in the Vercel project dashboard. No hardcoded Vite `base` path is needed for a normal Vercel project domain or custom domain.
 
@@ -73,7 +73,7 @@ Netlify is also a recommended first deployment target for this MVP. Use the defa
 - Install command: `npm install`.
 - Build command: `npm run build`.
 - Publish directory: `dist`.
-- Node version: platform default; if a version must be specified, use Node 20+.
+- Node version: platform default; if a version must be specified, use Node v24 LTS.
 - Local preview before pushing: `npm run build` then `npm run preview`.
 
 No `netlify.toml` is required right now because these settings can be configured in the Netlify site dashboard. No hardcoded Vite `base` path is needed for the default Netlify site URL or a custom domain.
