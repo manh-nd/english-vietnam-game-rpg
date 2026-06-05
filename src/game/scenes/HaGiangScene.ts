@@ -1,11 +1,19 @@
 import Phaser from 'phaser';
 
+import { NpcSprite } from '../entities/NpcSprite';
 import type { ContentDatabase } from '../systems/ContentDatabase';
+import type { NpcContent } from '../types/content';
 import type { LessonManager } from '../systems/LessonManager';
 
 export class HaGiangScene extends Phaser.Scene {
   public static readonly key = 'HaGiangScene';
 
+  private static readonly haGiangLocationId = 'ha_giang_loop';
+  private static readonly npcPlacements: Readonly<Record<string, Phaser.Math.Vector2>> = {
+    npc_may_guide: new Phaser.Math.Vector2(280, 220),
+    npc_binh_mechanic: new Phaser.Math.Vector2(520, 260),
+    npc_lan_homestay_host: new Phaser.Math.Vector2(430, 430),
+  };
   private static readonly player_speed = 220;
   private player?: Phaser.GameObjects.Rectangle;
   private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -36,9 +44,7 @@ export class HaGiangScene extends Phaser.Scene {
     this.player = this.add.rectangle(400, 300, 34, 42, 0x2f5cff);
     this.player.setStrokeStyle(2, 0xffffff, 0.9);
 
-    this.createPlaceholderNpc(280, 220, 'Guide');
-    this.createPlaceholderNpc(520, 260, 'Vendor');
-    this.createPlaceholderNpc(430, 430, 'Traveler');
+    this.createAuthoredNpcs();
 
     this.cursors = this.input.keyboard?.createCursorKeys();
     this.wasd = this.input.keyboard?.addKeys({
@@ -107,13 +113,49 @@ export class HaGiangScene extends Phaser.Scene {
     });
   }
 
-  private createPlaceholderNpc(x: number, y: number, label: string): void {
-    this.add.circle(x, y, 18, 0xf2d16b).setStrokeStyle(2, 0x4f3b12, 0.9);
-    this.add.text(x, y + 28, label, {
-      align: 'center',
-      color: '#ffffff',
+  private createAuthoredNpcs(): void {
+    const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
+
+    if (!contentDatabase) {
+      this.add.text(24, 146, 'Warning: ContentDatabase unavailable; NPCs were not rendered.', {
+        color: '#ffe8a3',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '14px',
+      });
+      return;
+    }
+
+    const haGiangNpcs = contentDatabase.getNpcsByLocation(HaGiangScene.haGiangLocationId);
+    const missingPlacementIds: string[] = [];
+    let renderedNpcCount = 0;
+
+    haGiangNpcs.forEach((npc: NpcContent) => {
+      const placement = HaGiangScene.npcPlacements[npc.id];
+
+      if (!placement) {
+        missingPlacementIds.push(npc.id);
+        return;
+      }
+
+      new NpcSprite({
+        scene: this,
+        npc,
+        x: placement.x,
+        y: placement.y,
+      });
+      renderedNpcCount += 1;
+    });
+
+    const debugLines = [`Ha Giang NPCs rendered: ${renderedNpcCount}/${haGiangNpcs.length}.`];
+    if (missingPlacementIds.length > 0) {
+      debugLines.push(`Missing NPC placements: ${missingPlacementIds.join(', ')}.`);
+    }
+
+    this.add.text(24, 146, debugLines, {
+      color: missingPlacementIds.length > 0 ? '#ffe8a3' : '#eef7ee',
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
-    }).setOrigin(0.5, 0);
+      lineSpacing: 4,
+    });
   }
 }
