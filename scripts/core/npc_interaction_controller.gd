@@ -1,6 +1,8 @@
 extends Node
 class_name NPCInteractionController
 
+signal lesson_answered(npc_id: String, lesson_id: String, result: Dictionary)
+
 const RESULT_DIALOGUE_BOX_MISSING := "dialogue_box_missing"
 const RESULT_LESSON_NOT_FOUND := "lesson_not_found"
 const RESULT_NPC_MISSING_INTRO_LESSON := "npc_missing_intro_lesson"
@@ -66,6 +68,7 @@ func _on_choice_selected(choice_index: int, _choice_text: String) -> void:
 
 	var result := LessonManager.check_answer(_current_lesson_id, choice_index, _current_location_id)
 	_current_dialogue_box.show_answer_result(result)
+	lesson_answered.emit(_current_npc_id, _current_lesson_id, result)
 
 func _clear_current_interaction() -> void:
 	if is_instance_valid(_current_dialogue_box):
