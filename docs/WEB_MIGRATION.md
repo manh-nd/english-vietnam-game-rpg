@@ -14,6 +14,7 @@ New feature work should target the **web stack under `src/`**, not the Godot run
 - Existing Godot project files, scenes, scripts, and exports have not been deleted.
 - `data/*.json` remains the source of truth for authored locations, NPCs, quests, and lessons.
 - `tools/validate_content.py` remains the validation pipeline for authored content references and schemas.
+- `ContentDatabase` and `LessonManager` now provide typed web access to loaded authored content and lesson answer checking.
 
 ## What is Preserved During Migration
 
@@ -24,8 +25,6 @@ New feature work should target the **web stack under `src/`**, not the Godot run
 
 ## What is Not Migrated Yet
 
-- Typed content access through `src/game/systems/ContentDatabase.ts` is not implemented yet.
-- Lesson flow coordination through `src/game/systems/LessonManager.ts` is not implemented yet.
 - Full dialogue UI and lesson prompt interactions are not implemented in Phaser yet.
 - Data-driven NPC rendering from `data/npcs.json` is not complete yet.
 - Quest progression, passport stamps, and persistent game state are not migrated yet.
@@ -65,11 +64,9 @@ python tools/validate_content.py
 
 ## Next Migration Steps
 
-1. Implement `src/game/systems/ContentDatabase.ts`.
-2. Implement `src/game/systems/LessonManager.ts`.
-3. Render NPCs from `data/npcs.json`.
-4. Build `src/game/ui/DialogueBox.ts` in the web UI.
-5. Reconnect quest progression.
+1. Render NPCs from `data/npcs.json`.
+2. Build `src/game/ui/DialogueBox.ts` in the web UI.
+3. Reconnect quest progression.
 
 ## Implementation Guidance
 

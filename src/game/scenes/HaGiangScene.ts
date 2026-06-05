@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 
+import type { ContentDatabase } from '../systems/ContentDatabase';
+import type { LessonManager } from '../systems/LessonManager';
+
 export class HaGiangScene extends Phaser.Scene {
   public static readonly key = 'HaGiangScene';
 
@@ -27,6 +30,8 @@ export class HaGiangScene extends Phaser.Scene {
       fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
     });
+
+    this.createContentDebugText();
 
     this.player = this.add.rectangle(400, 300, 34, 42, 0x2f5cff);
     this.player.setStrokeStyle(2, 0xffffff, 0.9);
@@ -69,6 +74,37 @@ export class HaGiangScene extends Phaser.Scene {
       this.player.x = Phaser.Math.Clamp(direction.x + this.player.x, 16, this.scale.width - 16);
       this.player.y = Phaser.Math.Clamp(direction.y + this.player.y, 20, this.scale.height - 20);
     }
+  }
+
+  private createContentDebugText(): void {
+    const contentDatabase = this.registry.get('contentDatabase') as ContentDatabase | undefined;
+    const lessonManager = this.registry.get('lessonManager') as LessonManager | undefined;
+
+    if (!contentDatabase || !lessonManager) {
+      this.add.text(24, 92, 'Content systems are not available yet.', {
+        color: '#ffe8a3',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '14px',
+      });
+      return;
+    }
+
+    const lessons = contentDatabase.getLessons();
+    const firstLesson = lessons[0];
+    const sampleResult = firstLesson
+      ? lessonManager.checkAnswer(firstLesson.id, firstLesson.correct_choice_index, firstLesson.location_id)
+      : undefined;
+    const sampleStatus = sampleResult ? sampleResult.status : 'no_lessons';
+
+    this.add.text(24, 92, [
+      `Content loaded: ${contentDatabase.getLocations().length} locations, ${contentDatabase.getNpcs().length} NPCs, ${lessons.length} lessons.`,
+      `Sample lesson check: ${sampleStatus}.`,
+    ], {
+      color: '#eef7ee',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '14px',
+      lineSpacing: 4,
+    });
   }
 
   private createPlaceholderNpc(x: number, y: number, label: string): void {
