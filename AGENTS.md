@@ -2,91 +2,123 @@
 
 ## 1. Project Goal
 
-This repository is a **Godot 4 web-exportable 2D top-down RPG** that teaches English to Vietnamese learners through an authored journey across Vietnam.
+This repository is a **web-first TypeScript + Phaser 2D top-down RPG** that teaches English to Vietnamese learners through an authored journey across Vietnam.
 
 The intended player experience is:
 
-- Explore Vietnam through small, readable top-down RPG scenes.
+- Explore Vietnam through small, readable top-down RPG scenes in the browser.
 - Meet NPCs who present practical English-learning conversations.
 - Complete short quests that reinforce vocabulary, dialogue comprehension, and useful travel phrases.
 - Progress through authored learning content in a way that feels playful before it becomes broad or technically complex.
 
-The current design priority is to make the **authored dialogue and learning loop fun, clear, and replayable** before adding larger systems.
+The current design priority is to make the **authored dialogue and learning loop fun, clear, and replayable** in the web stack before adding larger systems.
 
-## 2. Current MVP Scope
+## 2. Current Primary Implementation Target
 
-The MVP is focused on making the **Ha Giang Loop** playable as the first vertical slice.
+The active implementation target is a **pure web game using Vite + TypeScript + Phaser**.
+
+Primary web runtime work should happen under `src/` and should use standard browser-compatible TypeScript. New gameplay systems should be implemented in TypeScript, not in Godot/GDScript, unless the user explicitly requests otherwise.
+
+The near-term MVP remains focused on making the **Ha Giang Loop** playable as the first vertical slice.
 
 MVP work should prioritize:
 
-- Player movement and interaction in the Ha Giang Loop scene.
+- Player movement and interaction in the Phaser Ha Giang scene.
 - NPC dialogue driven by JSON content.
 - Short quests driven by JSON content.
 - Lessons and learning prompts driven by JSON content.
 - Passport/progression feedback for completing authored Ha Giang Loop activities.
 - Placeholder visuals that make gameplay understandable without blocking on final art.
-- Web export compatibility from Godot 4.
+- Browser-first development, testing, and deployment through Vite.
 
-Do **not** expand the game horizontally until the first loop is fun. In particular, do not add new locations before the **Ha Giang Loop** is playable and testable end-to-end.
+Do **not** expand the game horizontally until the first loop is fun. In particular, do not add new locations before the **Ha Giang Loop** is playable and testable end-to-end in the web stack.
 
-## 3. Repo Structure
+## 3. Legacy Godot Status
 
-Expected repository layout:
+Godot files remain in the repository temporarily as **legacy/reference material during migration**.
 
-- `project.godot` — Godot project settings, autoloads, input map, renderer settings, and main scene configuration.
-- `assets/` — art, icons, temporary placeholder assets, and future production assets.
-- `data/` — JSON-authored learning and game content. This is the source of truth for lessons, quests, NPCs, and locations.
+Legacy Godot material includes:
+
+- `project.godot`
+- `scenes/**/*.tscn`
+- `scripts/**/*.gd`
+- Godot-oriented assets, exports, and settings
+
+Rules for Godot files during migration:
+
+- Do **not** delete Godot files unless explicitly requested.
+- Do **not** add new GDScript or Godot gameplay systems unless explicitly requested.
+- Do **not** treat Godot as the primary runtime for new feature work.
+- Existing Godot scenes and scripts may be referenced for behavior, layout, and design intent while porting features to TypeScript.
+- Documentation may describe Godot files as legacy/reference material, but new implementation guidance should point to the web stack.
+
+## 4. Repo Structure
+
+Expected repository layout during migration:
+
+- `src/` — active web implementation using Vite, TypeScript, and Phaser.
+  - `src/game/scenes/HaGiangScene.ts` — primary MVP gameplay scene for the web vertical slice.
+  - `src/game/systems/ContentDatabase.ts` — planned typed access layer for authored JSON content.
+  - `src/game/systems/LessonManager.ts` — planned lesson flow/state coordinator.
+  - `src/game/systems/QuestManager.ts` — planned later quest/progression coordinator.
+  - `src/game/ui/DialogueBox.ts` — planned later reusable dialogue and lesson choice UI.
+- `data/` — JSON-authored learning and game content. This remains the source of truth for lessons, quests, NPCs, and locations.
   - `data/locations.json` — location metadata and scene references.
   - `data/npcs.json` — NPC metadata and authored dialogue references/content.
   - `data/quests.json` — quest definitions and completion requirements.
   - `data/lessons.json` — English-learning lesson content.
-- `scenes/` — Godot `.tscn` scenes.
-  - `scenes/Main.tscn` — project entry scene.
-  - `scenes/world/HaGiangLoop.tscn` — MVP gameplay test scene.
-  - `scenes/characters/` — player and character scenes.
-  - `scenes/ui/` — UI scenes such as dialogue panels.
-- `scripts/` — GDScript runtime behavior.
-  - `scripts/content/` — content loading and validation helpers.
-  - `scripts/core/` — game state and progression systems.
-  - `scripts/player/` — player input and movement behavior.
-  - `scripts/ui/` — UI controllers.
-  - `scripts/world/` — location and world interaction controllers.
+- `tools/validate_content.py` — content validation tool for authored JSON references and schemas.
+- `docs/` — roadmap, migration notes, and design documentation.
+- `assets/` — art, icons, temporary placeholder assets, and future production assets.
+- `project.godot`, `scenes/`, `scripts/` — legacy Godot runtime material retained for reference during migration.
 
 When adding new files, keep this structure simple and avoid premature framework abstractions.
 
-## 4. Godot 4 / GDScript Conventions
+## 5. Architecture Direction
 
-Follow Godot 4 conventions throughout the project:
+Current and planned web architecture:
 
-- Use Godot 4-compatible APIs and syntax only.
-- Prefer typed GDScript where it improves clarity, especially for function return types, exported variables, and core data structures.
-- Use `snake_case` for files, variables, functions, node paths, and signal names.
-- Use `PascalCase` for class names when `class_name` is appropriate.
-- Keep scripts small and attached to scenes that own the behavior.
-- Prefer composition through scenes/nodes over large inheritance hierarchies.
-- Use `@export` for designer-tunable values.
-- Avoid magic strings in gameplay code when a stable constant or data ID is more appropriate.
-- Keep autoloads minimal and purposeful; do not turn global singletons into catch-all managers.
-- Do not put `try`/`catch` blocks around imports or preload/load statements.
-- Keep gameplay logic deterministic and lightweight enough for web export.
+- `src/game/scenes/HaGiangScene.ts` is the main Phaser scene for the Ha Giang Loop vertical slice.
+- `src/game/systems/ContentDatabase.ts` should become the typed data access layer for `data/*.json` content.
+- `src/game/systems/LessonManager.ts` should coordinate authored lesson state and answer feedback.
+- `src/game/systems/QuestManager.ts` should be added later for quest state, requirements, and progression.
+- `src/game/ui/DialogueBox.ts` should be added later for reusable web dialogue and lesson choice UI.
 
-Scene conventions:
+Architectural rules:
 
-- Every gameplay feature should be testable in `scenes/world/HaGiangLoop.tscn` during the MVP.
-- Prefer placeholder nodes, `ColorRect`, simple shapes, and temporary sprites over final art while proving gameplay.
-- Keep scene node names descriptive and stable because scripts may rely on them.
-- Avoid adding editor-only dependencies that break headless checks or web exports.
+- Keep systems data-driven and browser-compatible.
+- Keep authored lesson, NPC, quest, dialogue, and location content out of gameplay code.
+- Prefer small TypeScript modules with clear ownership over large catch-all managers.
+- Avoid introducing dependencies unless the user explicitly asks for them.
+- Keep the Phaser foundation lightweight and easy to build with Vite.
 
-## 5. Data-Driven Content Rules
+## 6. TypeScript / Phaser Coding Conventions
+
+Follow strict TypeScript and Phaser conventions throughout new web work:
+
+- Use strict TypeScript with explicit types where they improve clarity.
+- Use `camelCase` for variables and functions.
+- Use `PascalCase` for classes and TypeScript types/interfaces.
+- Keep scene classes focused on scene composition and Phaser lifecycle behavior.
+- Put reusable gameplay/data logic in `src/game/systems/` instead of hardcoding it inside scene methods.
+- Put reusable UI components in `src/game/ui/` when they are introduced.
+- Prefer deterministic, lightweight browser-compatible logic.
+- Do not add native, server-only, or desktop-only assumptions.
+- Do not put `try`/`catch` blocks around imports.
+- Do not add new dependencies in documentation-only or small gameplay PRs.
+
+## 7. Data-Driven Content Rules
 
 This project is data-driven. Authored game and learning content belongs in `data/*.json`, not in scripts.
 
 Required rules:
 
-- Do **not** hardcode lesson, quest, NPC, or location content in scripts.
+- `data/*.json` remains the authored content source of truth.
+- `tools/validate_content.py` remains the content validation tool.
+- Do **not** hardcode lesson, quest, NPC, dialogue, quiz answer, or location content in gameplay systems.
 - All learning content must live in `data/*.json`.
 - NPC dialogue, lesson prompts, vocabulary, quiz choices, quest text, rewards, location descriptions, and progression metadata should be authored in JSON.
-- Scripts may load, validate, route, and display content, but should not define the authored content itself.
+- TypeScript systems may load, validate, route, and display content, but should not define authored content themselves.
 - Use stable string IDs to connect locations, NPCs, quests, lessons, and passport/progression records.
 - Prefer adding fields to JSON content over adding one-off script branches.
 - Keep content schemas simple and readable by non-programmers.
@@ -94,7 +126,7 @@ Required rules:
 
 During the MVP, content should serve the Ha Giang Loop vertical slice first.
 
-## 6. JSON Content Rules
+## 8. JSON Content Rules
 
 All files under `data/` should remain valid, readable JSON.
 
@@ -110,64 +142,64 @@ JSON authoring expectations:
 - Do not store generated, procedural, or machine-expanded bulk content in JSON during the MVP.
 - Keep Vietnamese learner context in mind: English should be practical, level-appropriate, and easy to connect to the scenario.
 - When adding dialogue choices, ensure the correct answer and feedback are represented in data, not hardcoded in UI scripts.
-- Validate JSON after edits with a command such as `python -m json.tool data/<file>.json` or an equivalent parser.
+- Validate JSON after edits with `python tools/validate_content.py` and, when useful, `python -m json.tool data/<file>.json`.
 
-## 7. Web Export Constraints
+## 9. Web Runtime Constraints
 
-The project should remain exportable to Web from Godot 4.
+The project should run as a browser-first web game.
 
 Web compatibility rules:
 
+- Use Vite-compatible imports and browser-compatible TypeScript.
 - Avoid native plugins, platform-specific APIs, and desktop-only filesystem assumptions.
-- Use `res://` project resources for bundled content.
-- Keep runtime file access compatible with exported resources.
+- Use bundled project resources for authored content and assets.
 - Keep memory, texture sizes, and scene complexity modest.
 - Avoid blocking network calls and large synchronous operations during gameplay.
 - Do not add advanced AI API integration until the authored dialogue loop is fun.
-- Do not require secrets, API keys, local files outside the exported project, or server-only infrastructure for MVP gameplay.
-- Test changes in a way that does not assume a desktop-only runtime path.
-- Preserve Godot 4 GL Compatibility / web-friendly rendering choices unless there is a deliberate, tested reason to change them.
+- Do not require secrets, API keys, local files outside the project, or server-only infrastructure for MVP gameplay.
+- Test changes in a way that reflects the browser runtime.
 
-## 8. Testing Expectations
+## 10. Testing Expectations
 
 Before submitting changes, run the checks that are practical for the change type.
 
-Minimum expectations:
-
-- For JSON changes, validate every edited `data/*.json` file with `python -m json.tool` or an equivalent parser.
-- For GDScript changes, run Godot headless checks if the Godot executable is available in the environment.
-- For scene or gameplay changes, verify the feature can be exercised in `scenes/world/HaGiangLoop.tscn`.
-- For web-sensitive changes, consider whether the change depends on unsupported native, filesystem, network, or rendering behavior.
-- If a check cannot be run because Godot or another dependency is unavailable, state that clearly in the PR/test summary.
-
-Recommended commands when available:
+Expected commands for web migration work:
 
 ```sh
-python -m json.tool data/locations.json >/dev/null
-python -m json.tool data/npcs.json >/dev/null
-python -m json.tool data/quests.json >/dev/null
-python -m json.tool data/lessons.json >/dev/null
-godot --headless --path . --quit
+npm run typecheck
+npm run build
+python tools/validate_content.py
 ```
 
-## 9. PR Checklist
+Minimum expectations:
+
+- For TypeScript changes, run `npm run typecheck`.
+- For web runtime changes, run `npm run build`.
+- For JSON/content changes, run `python tools/validate_content.py`.
+- For documentation-only changes, run the practical validation checks above when available and explain any skipped checks.
+- If a check cannot be run because a dependency is unavailable, state that clearly in the PR/test summary.
+
+## 11. PR Checklist
 
 Codex and human contributors should complete this checklist before submitting future PRs:
 
 - [ ] The PR is small, focused, and describes one coherent change.
+- [ ] New feature work targets the web TypeScript + Phaser stack under `src/`.
+- [ ] Godot files remain in the repo as legacy/reference material unless deletion was explicitly requested.
+- [ ] No new GDScript/Godot systems were added unless explicitly requested.
 - [ ] No gameplay code hardcodes lesson, quest, NPC, dialogue, or location content.
 - [ ] All learning content added or changed lives in `data/*.json`.
-- [ ] Edited JSON files have been validated with a parser.
-- [ ] The change is testable in the Ha Giang Loop scene during the MVP.
+- [ ] Edited JSON files have been validated with `python tools/validate_content.py` or an equivalent parser.
+- [ ] The change is testable in the Ha Giang web vertical slice during the MVP.
 - [ ] No new locations were added before the Ha Giang Loop is playable end-to-end.
 - [ ] No combat, inventory, economy, or procedural content systems were introduced.
 - [ ] No advanced AI API integration was added before the authored dialogue loop is fun.
 - [ ] Placeholder art was preferred over final art unless final art was explicitly requested.
-- [ ] The project remains exportable to Web from Godot 4.
+- [ ] The project remains buildable as a browser-first Vite application.
 - [ ] Relevant checks were run, or any skipped checks are explained with the reason.
 - [ ] The final response/PR summary includes the commands that were run.
 
-## 10. Do-Not Rules
+## 12. Do-Not Rules
 
 Do not do the following during the MVP:
 
@@ -182,6 +214,6 @@ Do not do the following during the MVP:
 - Do not add advanced AI API integration until the authored dialogue loop is fun.
 - Do not make large, unfocused PRs.
 - Do not block MVP progress on final art; use placeholders.
-- Do not add dependencies that compromise Godot 4 Web export.
+- Do not add dependencies that compromise the browser-first web runtime.
 - Do not require online services for the MVP gameplay loop.
 - Do not replace simple authored content with complex frameworks before the vertical slice proves the fun.
