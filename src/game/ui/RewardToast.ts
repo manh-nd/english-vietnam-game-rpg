@@ -5,6 +5,7 @@ const padding = 14;
 const minToastHeight = 74;
 const lineHeight = 21;
 const autoHideDelayMs = 4000;
+const toastY = 156;
 
 export class RewardToast extends Phaser.GameObjects.Container {
   private readonly background: Phaser.GameObjects.Rectangle;
@@ -13,7 +14,7 @@ export class RewardToast extends Phaser.GameObjects.Container {
 
   public constructor(scene: Phaser.Scene) {
     const x = scene.scale.width - toastWidth - 24;
-    const y = 96;
+    const y = toastY;
 
     super(scene, x, y);
 
@@ -23,7 +24,7 @@ export class RewardToast extends Phaser.GameObjects.Container {
       toastWidth,
       minToastHeight,
       0x173324,
-      0.94,
+      0.98,
     );
     this.background.setOrigin(0, 0);
     this.background.setStrokeStyle(2, 0xf4d17a, 0.95);
