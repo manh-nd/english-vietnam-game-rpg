@@ -11,6 +11,7 @@ const REQUIRED_FIELDS := [
 	"hint",
 	"explanation_vi",
 	"reward_vocab",
+	"skill",
 	"passport_stamp_id",
 	"correct_choice_index",
 ]
@@ -38,7 +39,7 @@ func load_lessons(path: String = LESSONS_PATH) -> void:
 		var errors := _validate_lesson_schema(lesson_data)
 		_validation_errors.append_array(errors)
 
-		if lesson_id.is_empty() or _lessons_by_id.has(lesson_id):
+		if not errors.is_empty():
 			continue
 
 		_lessons.append(lesson_data)
@@ -151,14 +152,25 @@ func _validate_lesson_schema(lesson: Dictionary) -> Array[String]:
 	if typeof(choices) != TYPE_ARRAY or choices.is_empty():
 		errors.append("Lesson %s must define at least one choice." % lesson_id)
 	else:
-		var correct_choice_index := int(lesson.get("correct_choice_index", -1))
-		if correct_choice_index < 0 or correct_choice_index >= choices.size():
+		var correct_choice_index = lesson.get("correct_choice_index")
+		if not _is_integer_value(correct_choice_index):
+			errors.append("Lesson %s correct_choice_index must be an integer." % lesson_id)
+		elif correct_choice_index < 0 or correct_choice_index >= choices.size():
 			errors.append("Lesson %s has an invalid correct_choice_index." % lesson_id)
 
 	if typeof(lesson.get("reward_vocab", [])) != TYPE_ARRAY:
 		errors.append("Lesson %s reward_vocab must be an array." % lesson_id)
 
 	return errors
+
+func _is_integer_value(value: Variant) -> bool:
+	match typeof(value):
+		TYPE_INT:
+			return true
+		TYPE_FLOAT:
+			return is_equal_approx(value, floorf(value))
+		_:
+			return false
 
 func _build_unavailable_answer_result(lesson_id: String, choice_index: int, reason: String) -> Dictionary:
 	return {
