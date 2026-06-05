@@ -8,6 +8,13 @@ interface ChoiceRow {
   readonly text: Phaser.GameObjects.Text;
 }
 
+type ChoiceResultState = 'none' | 'retry' | 'correct';
+
+const choiceRowHeight = 42;
+const choiceRowGap = 8;
+const choiceStartY = 94;
+const choiceSubmitDebounceMs = 150;
+
 export class DialogueBox extends Phaser.GameObjects.Container {
   public static readonly choiceSelectedEvent = 'choiceSelected';
   public static readonly closedEvent = 'closed';
@@ -28,12 +35,15 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private choiceRows: ChoiceRow[] = [];
   private choiceTexts: string[] = [];
   private selectedChoiceIndex = 0;
+  private submittedChoiceIndex: number | undefined;
+  private resultState: ChoiceResultState = 'none';
+  private nextChoiceSubmitAt = 0;
   private open = false;
   private answeredCorrectly = false;
 
   public constructor(scene: Phaser.Scene) {
     const width = Math.min(scene.scale.width - 48, 720);
-    const height = 250;
+    const height = 330;
     const x = (scene.scale.width - width) / 2;
     const y = scene.scale.height - height - 24;
 
@@ -58,7 +68,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
       wordWrap: { width: width - 36 },
     });
 
-    this.feedbackText = scene.add.text(18, 174, '', {
+    this.feedbackText = scene.add.text(18, 242, '', {
       color: '#d9f7df',
       fontFamily: 'Arial, sans-serif',
       fontSize: '14px',
@@ -66,7 +76,7 @@ export class DialogueBox extends Phaser.GameObjects.Container {
       wordWrap: { width: width - 36 },
     });
 
-    this.closeInstructionText = scene.add.text(width - 18, height - 22, 'Esc: close', {
+    this.closeInstructionText = scene.add.text(width - 18, height - 22, 'Esc để đóng', {
       color: '#b9c8be',
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
@@ -102,11 +112,16 @@ export class DialogueBox extends Phaser.GameObjects.Container {
     this.clearChoices();
     this.choiceTexts = [...lesson.choices];
     this.selectedChoiceIndex = 0;
+    this.submittedChoiceIndex = undefined;
+    this.resultState = 'none';
+    this.nextChoiceSubmitAt = 0;
     this.answeredCorrectly = false;
 
     this.npcNameText.setText(npcName);
     this.npcLineText.setText(lesson.npc_line);
-    this.feedbackText.setText(lesson.hint ? `Hint: ${lesson.hint}` : 'Choose the best reply.');
+    this.feedbackText.setColor('#d9f7df');
+    this.feedbackText.setText(lesson.hint ? `Gợi ý: ${lesson.hint}` : 'Chọn câu trả lời phù hợp nhất.');
+    this.closeInstructionText.setText('↑/↓ chọn · Enter/Space trả lời · Esc đóng');
 
     lesson.choices.forEach((choice, index) => {
       this.createChoiceRow(choice, index);
@@ -121,35 +136,45 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   public showAnswerResult(result: LessonAnswerResult): void {
     const feedbackLines: string[] = [];
 
+    if (this.choiceTexts[result.choiceIndex] !== undefined) {
+      this.submittedChoiceIndex = result.choiceIndex;
+    }
+
     if (result.status === 'correct') {
       this.answeredCorrectly = true;
-      feedbackLines.push('Correct!');
+      this.resultState = 'correct';
+      feedbackLines.push('✓ Đúng rồi!');
     } else if (result.status === 'incorrect') {
-      feedbackLines.push('Try again: that answer does not fit this moment.');
+      this.resultState = 'retry';
+      feedbackLines.push('↺ Chưa đúng, thử lại nhé.');
     } else if (result.status === 'invalid_choice') {
-      feedbackLines.push('That choice is not available.');
+      this.resultState = 'retry';
+      feedbackLines.push('Chưa chọn được câu này, thử lại nhé.');
     } else if (result.status === 'wrong_location') {
-      feedbackLines.push('This lesson belongs to a different location.');
+      this.resultState = 'retry';
+      feedbackLines.push('Bài học này thuộc địa điểm khác.');
     } else {
-      feedbackLines.push('This lesson is not available right now.');
+      this.resultState = 'retry';
+      feedbackLines.push('Bài học này chưa sẵn sàng.');
     }
 
     if (result.selectedChoice) {
-      feedbackLines.push(`You chose: ${result.selectedChoice}`);
+      feedbackLines.push(`Bạn đã chọn: ${result.selectedChoice}`);
     }
 
     if ((result.status === 'incorrect' || result.status === 'invalid_choice') && result.correctChoice) {
-      feedbackLines.push(`Correct answer: ${result.correctChoice}`);
+      feedbackLines.push(`Đáp án phù hợp: ${result.correctChoice}`);
     }
 
     if (result.explanationVi) {
-      feedbackLines.push(`Tiếng Việt: ${result.explanationVi}`);
+      feedbackLines.push(`Giải thích: ${result.explanationVi}`);
     }
 
-    if (result.hint) {
-      feedbackLines.push(`Hint: ${result.hint}`);
+    if (result.hint && result.status !== 'correct') {
+      feedbackLines.push(`Gợi ý: ${result.hint}`);
     }
 
+    this.feedbackText.setColor(result.status === 'correct' ? '#bff5c7' : '#ffe9a8');
     this.feedbackText.setText(feedbackLines.join('\n'));
     this.updateChoiceHighlights();
   }
@@ -157,10 +182,15 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   public showSystemMessage(title: string, message: string): void {
     this.clearChoices();
     this.answeredCorrectly = false;
+    this.submittedChoiceIndex = undefined;
+    this.resultState = 'none';
+    this.nextChoiceSubmitAt = 0;
     this.selectedChoiceIndex = 0;
     this.npcNameText.setText(title);
     this.npcLineText.setText(message);
-    this.feedbackText.setText('Press Escape to close.');
+    this.feedbackText.setColor('#d9f7df');
+    this.feedbackText.setText('Esc để đóng');
+    this.closeInstructionText.setText('Esc để đóng');
     this.open = true;
     this.setVisible(true);
     this.setActive(true);
@@ -173,6 +203,9 @@ export class DialogueBox extends Phaser.GameObjects.Container {
 
     this.open = false;
     this.answeredCorrectly = false;
+    this.submittedChoiceIndex = undefined;
+    this.resultState = 'none';
+    this.nextChoiceSubmitAt = 0;
     this.setVisible(false);
     this.setActive(false);
     this.emit(DialogueBox.closedEvent);
@@ -207,17 +240,18 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   }
 
   private createChoiceRow(choice: string, index: number): void {
-    const rowY = 92 + index * 27;
+    const rowY = choiceStartY + index * (choiceRowHeight + choiceRowGap);
     const rowWidth = this.background.width - 36;
-    const background = this.scene.add.rectangle(18, rowY, rowWidth, 23, 0x263b30, 0.95);
+    const background = this.scene.add.rectangle(18, rowY, rowWidth, choiceRowHeight, 0x263b30, 0.95);
     background.setOrigin(0, 0);
     background.setStrokeStyle(1, 0x8da894, 0.8);
     background.setInteractive({ useHandCursor: true });
 
-    const text = this.scene.add.text(28, rowY + 4, `${index + 1}. ${choice}`, {
+    const text = this.scene.add.text(28, rowY + 7, `${index + 1}. ${choice}`, {
       color: '#f4fff6',
       fontFamily: 'Arial, sans-serif',
-      fontSize: '14px',
+      fontSize: '15px',
+      lineSpacing: 2,
       wordWrap: { width: rowWidth - 20 },
     });
 
@@ -248,6 +282,8 @@ export class DialogueBox extends Phaser.GameObjects.Container {
     });
     this.choiceRows = [];
     this.choiceTexts = [];
+    this.submittedChoiceIndex = undefined;
+    this.resultState = 'none';
   }
 
   private moveSelectedChoice(direction: number): void {
@@ -270,11 +306,14 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private selectChoice(choiceIndex: number): void {
     const choiceText = this.choiceTexts[choiceIndex];
 
-    if (!this.isOpen() || this.answeredCorrectly || choiceText === undefined) {
+    if (!this.isOpen() || this.answeredCorrectly || choiceText === undefined || this.scene.time.now < this.nextChoiceSubmitAt) {
       return;
     }
 
     this.selectedChoiceIndex = choiceIndex;
+    this.submittedChoiceIndex = choiceIndex;
+    this.resultState = 'none';
+    this.nextChoiceSubmitAt = this.scene.time.now + choiceSubmitDebounceMs;
     this.updateChoiceHighlights();
     this.emit(DialogueBox.choiceSelectedEvent, choiceIndex, choiceText);
   }
@@ -282,10 +321,28 @@ export class DialogueBox extends Phaser.GameObjects.Container {
   private updateChoiceHighlights(): void {
     this.choiceRows.forEach((row, index) => {
       const isSelected = index === this.selectedChoiceIndex;
+      const isSubmitted = index === this.submittedChoiceIndex;
+      const isCorrectResult = isSubmitted && this.resultState === 'correct';
+      const isRetryResult = isSubmitted && this.resultState === 'retry';
       const isLocked = this.answeredCorrectly;
+
+      if (isCorrectResult) {
+        row.background.setFillStyle(0x1f5d35, 0.98);
+        row.background.setStrokeStyle(2, 0xa7f3b5, 0.95);
+        row.text.setColor('#e9ffed');
+        return;
+      }
+
+      if (isRetryResult) {
+        row.background.setFillStyle(0x5a3f23, 0.98);
+        row.background.setStrokeStyle(2, 0xffd38a, 0.95);
+        row.text.setColor('#fff0c7');
+        return;
+      }
+
       row.background.setFillStyle(isLocked ? 0x223027 : isSelected ? 0x3b5f47 : 0x263b30, 0.95);
       row.background.setStrokeStyle(isSelected ? 2 : 1, isLocked ? 0x6f8275 : isSelected ? 0xffe08a : 0x8da894, 0.9);
-      row.text.setColor(isLocked ? '#b9c8be' : isSelected ? '#fff3a8' : '#f4fff6');
+      row.text.setColor(isLocked ? '#8fa096' : isSelected ? '#fff3a8' : '#f4fff6');
     });
   }
 }
